@@ -130,12 +130,17 @@ function menu() {
 
 // Display a counter how many modules are in this category (WP inf) (WIP)
 function countModules() {
-    // todo: only count modules, not their corresponding exercises
     // todo: make this work if there is also titles between the modules
     mainTable = document.querySelector("table[border='0'][width='100%'][cellspacing='17'][cellpadding='0'] tbody")
     if(mainTable) {
         try {
-            count = mainTable.children[1].children[0].children[3].children[0].children.length
+            modules = mainTable.children[1].children[0].children[3].children[0].children
+            count = 0
+            for (mod of modules) {
+                if (mod.innerText.match('V;')) {
+                    count++
+                }
+            }
             heading = mainTable.children[1].children[0].children[0]
             heading.innerText = heading.innerText + " ("+ count + " modules)"
         } catch {
