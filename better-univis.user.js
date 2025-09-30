@@ -183,6 +183,13 @@ function darkMode() {
         })
     }
 
+function prideLogo() {
+    logo = document.querySelectorAll("img[src='/img/anew/univis_96_20.gif']")
+    for (instance of logo) {
+        instance.setAttribute("src", "https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/logo.png")
+    }
+}
+
 function runAllImprovements() {
     changeFont()
     darkMode()
@@ -190,6 +197,7 @@ function runAllImprovements() {
     removeCAULink()
     replaceCheckboxes()
     menu()
+    prideLogo()
     groupByECTS()
 }
 
