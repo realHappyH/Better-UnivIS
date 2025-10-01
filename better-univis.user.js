@@ -135,14 +135,16 @@ function countModules() {
     if(mainTable) {
         try {
             modules = mainTable.children[1].children[0].children[3].children[0].children
-            count = 0
-            for (mod of modules) {
-                if (mod.innerText.match('V;')) {
-                    count++
+            if (modules.length > 0) {
+                count = 0
+                for (mod of modules) {
+                    if (mod.innerText.match('V;')) {
+                        count++
+                    }
                 }
+                heading = mainTable.children[1].children[0].children[0]
+                heading.innerText = heading.innerText + " ("+ count + " modules)"
             }
-            heading = mainTable.children[1].children[0].children[0]
-            heading.innerText = heading.innerText + " ("+ count + " modules)"
         } catch {
             // we are not in a table with modules
             console.log("Main table not found")
