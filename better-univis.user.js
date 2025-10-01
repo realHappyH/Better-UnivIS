@@ -159,12 +159,15 @@ function groupByECTS() {
     // find the main table
     mainTable = document.querySelector("h2 ~ table")
     if (mainTable) {
-        entries = mainTable.children[0].children
+        const entries = mainTable.children[0].children
         var dict = {};
+        const bgcolor = "#eeeeee"
+        let hasColor = false
 
         // go through each entry in the table, and add them to a dictionary corresponding to the nr. of ECTS
+        let previous = "undefined"
         for (entry of entries) {
-            small = entry.querySelector("h4 ~ small")
+            let small = entry.querySelector("h4 ~ small")
             if (small) {
                 infotext = small.innerText
                 // these are the two types of ways I've seen ECTS indicated in the text
@@ -172,44 +175,42 @@ function groupByECTS() {
                 j = infotext.indexOf("ECTS;") // two different possible ECTS numbers before, I take the second
                 if (i > -1) {
                     ects = infotext.substring(i + 6, i + 7)
-                    if(Object.hasOwn(dict, ects)) {
-                        dict[ects].push(entry)
-                    } else {
-                        dict[ects] = [entry]
-                    }
                 } else if (j > -1) {
                     ects = infotext.substring(j - 3, j - 1)
                     ects = ects.trim()
-                    if(Object.hasOwn(dict, ects)) {
-                        dict[ects].push(entry)
-                    } else {
-                        dict[ects] = [entry]
-                    }
-                } else {
-                    if(Object.hasOwn(dict, "undefined")) {
-                        dict["undefined"].push(entry)
-                    } else {
-                        dict["undefined"] = [entry]
-                    }
-            }
-            } else {
-                if(Object.hasOwn(dict, "undefined")) {
-                    dict["undefined"].push(entry)
-                } else {
-                    dict["undefined"] = [entry]
+                // if it is an exercise, I rely on the fact that the previous entry was the corresponding VL
+                } else if (infotext.match("UE")){
+                    ects = previous
                 }
+            } else {
+                ects = "undefined"
             }
+            if(Object.hasOwn(dict, ects)) {
+                dict[ects].push(entry)
+            } else {
+                dict[ects] = [entry]
+            }
+            previous = ects
         }
         // add them again, with headings <h3> which ECTS it is
-        console.log(dict)
         ectss = Object.keys(dict)
-        console.log(ectss)
         ectss.sort()
         for (ects of ectss) {
             heading = document.createElement("h3")
             heading.innerText = ects + " ECTS"
             mainTable.children[0].appendChild(heading)
             for (entry of dict[ects]) {
+                small = entry.querySelector("h4 ~ small")
+                if (small) {
+                    if (!small.innerText.match("UE")) {
+                        hasColor = !(hasColor && true)
+                    }
+                }
+                if (hasColor) {
+                    entry.setAttribute("bgcolor", bgcolor)
+                } else {
+                    entry.removeAttribute("bgcolor")
+                }
                 mainTable.children[0].appendChild(entry)
             }
         }
