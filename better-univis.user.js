@@ -25,7 +25,7 @@ function changeFont() {
         bodyElement = bodyElement[0]
 
         const styles = {
-            fontFamily:'Bahnschrift, Helvetica, Sans Serif'
+            fontFamily: 'Bahnschrift, Helvetica, Sans Serif'
         }
         Object.assign(bodyElement.style, styles)
     }
@@ -33,9 +33,9 @@ function changeFont() {
 
 // remove the big CAU image that links to the CAU Main page
 function removeCAULink() {
-    let cauElement = document.querySelector("td[bgcolor='#eeeeee'][width='148'][rowspan='2']")
-    let bgElement = document.querySelector("td[colspan='1'][rowspan='2'][bgcolor='#003366'][width='1']")
-    let sideElement = document.querySelector("table[width='100%'] tbody")
+    const cauElement = document.querySelector("td[bgcolor='#eeeeee'][width='148'][rowspan='2']")
+    const bgElement = document.querySelector("td[colspan='1'][rowspan='2'][bgcolor='#003366'][width='1']")
+    const sideElement = document.querySelector("table[width='100%'] tbody")
     if (cauElement && bgElement && sideElement) {
         cauElement.remove()
         bgElement.remove()
@@ -131,19 +131,19 @@ function menu() {
 // Display a counter how many modules are in this category (WP inf) (WIP)
 function countModules() {
     // todo: make this work if there is also titles between the modules
-    mainTable = document.querySelector("table[border='0'][width='100%'][cellspacing='17'][cellpadding='0'] tbody")
+    const mainTable = document.querySelector("table[border='0'][width='100%'][cellspacing='17'][cellpadding='0'] tbody")
     if(mainTable) {
         try {
-            modules = mainTable.children[1].children[0].children[3].children[0].children
+            const modules = mainTable.children[1].children[0].children[3].children[0].children
             if (modules.length > 0) {
-                count = 0
+                let count = 0
                 for (mod of modules) {
                     if (mod.innerText.match('V;')) {
                         count++
                     }
                 }
-                heading = mainTable.children[1].children[0].children[0]
-                heading.innerText = heading.innerText + " ("+ count + " modules)"
+                const heading = mainTable.children[1].children[0].children[0]
+                heading.innerText = `${heading.innerText} (${count} modules)`
             }
         } catch {
             // we are not in a table with modules
@@ -154,25 +154,24 @@ function countModules() {
 
 // group modules by their ECTS
 function groupByECTS() {
-    // todo: group corresponding exercises with their modules
-    // todo: recolor the table such that it is grey/black one after another again
+    // todo: group small sub-exercises with their header exercise
     // find the main table
-    mainTable = document.querySelector("h2 ~ table")
+    const mainTable = document.querySelector("h2 ~ table")
     if (mainTable) {
-        const entries = mainTable.children[0].children
-        var dict = {};
         const bgcolor = "#eeeeee"
-        let hasColor = false
+        const entries = mainTable.children[0].children
+        const ectsAndModules = {};
 
         // go through each entry in the table, and add them to a dictionary corresponding to the nr. of ECTS
-        let previous = "undefined"
+        let ects = "undefined"
+        let previous = ects
         for (entry of entries) {
-            let small = entry.querySelector("h4 ~ small")
+            const small = entry.querySelector("h4 ~ small")
             if (small) {
-                infotext = small.innerText
+                const infotext = small.innerText
                 // these are the two types of ways I've seen ECTS indicated in the text
-                i = infotext.indexOf("ECTS: ") // nr of ects after
-                j = infotext.indexOf("ECTS;") // two different possible ECTS numbers before, I take the second
+                const i = infotext.indexOf("ECTS: ") // nr of ects after
+                const j = infotext.indexOf("ECTS;") // two different possible ECTS numbers before, I take the second
                 if (i > -1) {
                     ects = infotext.substring(i + 6, i + 7)
                 } else if (j > -1) {
@@ -181,26 +180,29 @@ function groupByECTS() {
                 // if it is an exercise, I rely on the fact that the previous entry was the corresponding VL
                 } else if (infotext.match("UE")){
                     ects = previous
+                } else {
+                    ects = "undefined"
                 }
             } else {
                 ects = "undefined"
             }
-            if(Object.hasOwn(dict, ects)) {
-                dict[ects].push(entry)
+            if(Object.hasOwn(ectsAndModules, ects)) {
+                ectsAndModules[ects].push(entry)
             } else {
-                dict[ects] = [entry]
+                ectsAndModules[ects] = [entry]
             }
             previous = ects
         }
         // add them again, with headings <h3> which ECTS it is
-        ectss = Object.keys(dict)
+        let hasColor = false
+        let ectss = Object.keys(ectsAndModules)
         ectss.sort()
         for (ects of ectss) {
-            heading = document.createElement("h3")
+            const heading = document.createElement("h3")
             heading.innerText = ects + " ECTS"
             mainTable.children[0].appendChild(heading)
-            for (entry of dict[ects]) {
-                small = entry.querySelector("h4 ~ small")
+            for (entry of ectsAndModules[ects]) {
+                const small = entry.querySelector("h4 ~ small")
                 if (small) {
                     if (!small.innerText.match("UE")) {
                         hasColor = !(hasColor && true)
@@ -219,10 +221,8 @@ function groupByECTS() {
 
 // removes the useless checkboxes and replaces the useful but ugly ones with pretty ones
 function replaceCheckboxes() {
-    // todo: better images for the checkboxes
-
     // remove the useless checkboxes
-    uselessCheckboxes = document.querySelectorAll("input[type='checkbox']")
+    const uselessCheckboxes = document.querySelectorAll("input[type='checkbox']")
     if (uselessCheckboxes) {
         for (checkbox of uselessCheckboxes) {
             checkbox.remove()
@@ -230,11 +230,10 @@ function replaceCheckboxes() {
     }
 
     // remove the useless "Auswahl hinzufügen" options
-    uselessOptions1 = document.querySelectorAll("input[name='hinzufügen']")
-    uselessOptions2 = document.querySelectorAll("input[name='löschen']")
-    uselessOptions3 = document.querySelectorAll("input[name='einschränken']")
-    if (uselessOptions1 && uselessOptions2 && uselessOptions3) {
-        for (options of [uselessOptions1, uselessOptions2, uselessOptions3]) {
+    const optionNames = ["hinzufügen", "löschen", "einschränken"]
+    const uselessOptions = optionNames.map(name => document.querySelectorAll(`input[name='${name}']`))
+    if (uselessOptions.reduce((acc, cur) => acc && cur)) {
+        for (options of uselessOptions) {
             for (option of options) {
                 option.remove()
             }
@@ -242,20 +241,25 @@ function replaceCheckboxes() {
     }
 
     // replace the ugly checkbox images with better images
-    uglyCheckboxes_unchecked = document.querySelectorAll("input[type='image'][src='/img/anew/samm.gif']")
-    if (uglyCheckboxes_unchecked) {
-        for (checkbox of uglyCheckboxes_unchecked) {
-            checkbox.setAttribute("width", "30px")
-            checkbox.setAttribute("height", "30px")
-            checkbox.setAttribute("src", "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.pngrepo.com%2Fpng%2F310639%2F512%2Fcheckbox-unchecked.png&f=1&nofb=1&ipt=3a01b0d8302f57889a8036d67b4c5674be1729c061a6ac6bef5a708fc7934721")
-        }
-    }
-    uglyCheckboxes_checked = document.querySelectorAll("input[type='image'][src='/img/anew/samm_yes.gif']")
-    if (uglyCheckboxes_checked) {
-        for (checkbox of uglyCheckboxes_checked) {
-            checkbox.setAttribute("width", '30px')
-            checkbox.setAttribute("height", "30px")
-            checkbox.setAttribute("src", "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fclipart-library.com%2Fimages_k%2Fwhite-check-mark-transparent-background%2Fwhite-check-mark-transparent-background-20.png&f=1&nofb=1&ipt=0672ebe2bd12abd7f1fae8cd608c67bd19f88d7cf1592be3dab4e98bdf511777")
+    // todo: it is not easily possible to replace the images with actual html checkboxes. Maybe find out how?
+    const checkboxNames = ["samm", "samm_yes"]
+    const uglyCheckboxes = checkboxNames.map(
+        name => [
+            name, document.querySelectorAll(`input[type='image'][src='/img/anew/${name}.gif']`)
+        ])
+    const style = "filter:invert(93%)"
+    if (uglyCheckboxes.reduce((acc, cur) => acc && cur[1])) {
+        for ([checkboxName, checkboxes] of uglyCheckboxes) {
+            for (checkbox of checkboxes) {
+                checkbox.setAttribute("width", "30px")
+                checkbox.setAttribute("height", "30px")
+                checkbox.setAttribute("style", style)
+                if (checkboxName == "samm") {
+                    checkbox.setAttribute("src", "https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/checkbox-unchecked.svg")
+                } else {
+                    checkbox.setAttribute("src", "https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/checkbox-checked.svg")
+                }
+            }
         }
     }
 }
@@ -272,7 +276,7 @@ function darkMode() {
 
 // replaces the logo with a pride version
 function prideLogo() {
-    logo = document.querySelectorAll("img[src='/img/anew/univis_96_20.gif']")
+    const logo = document.querySelectorAll("img[src='/img/anew/univis_96_20.gif']")
     for (instance of logo) {
         instance.setAttribute("src", "https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/logo.png")
     }
