@@ -154,7 +154,6 @@ function countModules() {
 
 // group modules by their ECTS
 function groupByECTS() {
-    // todo: group small sub-exercises with their header exercise
     // find the main table
     const mainTable = document.querySelector("h2 ~ table")
     if (mainTable) {
@@ -171,20 +170,24 @@ function groupByECTS() {
                 const infotext = small.innerText
                 // these are the two types of ways I've seen ECTS indicated in the text
                 const i = infotext.indexOf("ECTS: ") // nr of ects after
-                const j = infotext.indexOf("ECTS;") // two different possible ECTS numbers before, I take the second
+                const j = Math.max(
+                    infotext.indexOf("ECTS;"), // two different possible ECTS numbers before, I take the second
+                    infotext.indexOf("ETC;")   // same, but sometimes the S is not included for some reason
+                )
                 if (i > -1) {
                     ects = infotext.substring(i + 6, i + 7)
                 } else if (j > -1) {
                     ects = infotext.substring(j - 3, j - 1)
                     ects = ects.trim()
                 // if it is an exercise, I rely on the fact that the previous entry was the corresponding VL
-                } else if (infotext.match("UE")){
+                } else if (!infotext.match("V;")){
                     ects = previous
                 } else {
                     ects = "undefined"
                 }
             } else {
-                ects = "undefined"
+                // the small exercises for Math modules land here
+                ects = previous
             }
             if(Object.hasOwn(ectsAndModules, ects)) {
                 ectsAndModules[ects].push(entry)
