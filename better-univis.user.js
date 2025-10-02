@@ -175,7 +175,10 @@ function groupByECTS() {
                     infotext.indexOf("ETC;")   // same, but sometimes the S is not included for some reason
                 )
                 if (i > -1) {
-                    ects = infotext.substring(i + 6, i + 7)
+                    ects = infotext.substring(i + 6, i + 8)
+                    if (ects[1] == ";") {
+                        ects = ects[0]
+                    }
                 } else if (j > -1) {
                     ects = infotext.substring(j - 3, j - 1)
                     ects = ects.trim()
