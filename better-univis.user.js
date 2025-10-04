@@ -219,8 +219,9 @@ function groupByECTS() {
                 // these are the two types of ways I've seen ECTS indicated in the text
                 const i = infotext.indexOf("ECTS: ") // nr of ects after
                 const j = Math.max(
-                    infotext.indexOf("ECTS;"), // two different possible ECTS numbers before, I take the second
-                    infotext.indexOf("ETC;")   // same, but sometimes the S is not included for some reason
+                    infotext.indexOf("ECTS;"),  // two different possible ECTS numbers before, I take the second
+                    infotext.indexOf("ETC;") ,  // same, but sometimes the S is not included for some reason
+                    infotext.indexOf("ECTS,")   // occasionally comma instead of semicolon
                 )
                 if (i > -1) {
                     ects = infotext.substring(i + 6, i + 8)
