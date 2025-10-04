@@ -18,6 +18,11 @@
 // leftLinksInBody = completeDoc.children[3].children[0].children
 // mainbody = completeDoc.children[3].children[1]
 
+// get element by its image source
+function getImgBySrc(src) {
+    return document.querySelector(`img[src='${src}']`)
+}
+
 // change main font to Bahnschrift
 function changeFont() {
     let bodyElement = document.getElementsByTagName("body")
@@ -48,6 +53,7 @@ function removeCAULink() {
 }
 
 // change the menu to be in a coherent style
+// run after removeCauLink
 function menu() {
     // make button style
     const buttonStyle = `
@@ -60,72 +66,113 @@ function menu() {
     text-decoration: none;
 }
     `
-    var stylesheet = document.createElement("style")
+    const stylesheet = document.createElement("style")
     stylesheet.innerText = buttonStyle
     document.head.appendChild(stylesheet)
 
-    // function to create a button that links to the link with name name
-    function createLinkButton(link, name) {
-        let button = document.createElement("a")
-        button.setAttribute("href", link)
-        button.innerText = name
-        button.setAttribute("class", "button")
-        return button
+    // constant to hold all menu elements with their links that exist
+    const menuElems = {}
+    const _menuHeader = document.querySelector("td[nowrap=''][valign='middle']")
+
+    // Elements of the black top header
+
+    // get sammlung/stundenplan link
+    const sammlungImg = getImgBySrc("/img/anew/samm_inv.gif")
+    if (sammlungImg) {
+        const sammlungLink = menuElems.sammlung = sammlungImg.parentElement.getAttribute("href")
+        menuElems.sammlung = [sammlungLink, "📅 Sammlung"]
     }
 
-    // navigate to the menu element. Caution: Only works after CAU Link has already been removed.
-    completeDoc = document.querySelector("table tbody")
-    topHeaderWithSearch = completeDoc.children[1].children[0].children[0].children[0].children[0].children[1].children[1].children[0].children[0].children[1].children[0].children[0].children[0]
-
-    // get a list of the other "menus" (tables with links on the left)
-    leftLinksInBody = completeDoc.children[3].children[0].children
-    for (table of leftLinksInBody) {
-        heading = table.children[0].children[2].children[0].children[0].textContent
-    }
-    // todo: implement
-
-    // get the link for "Sammlung/stundenplan" and "Home/Kontakt/Hilfe/Sprache", remove the top bar, and add them to the menu
-    topHeaderWithTimetable = completeDoc.children[1].children[0].children[0].children[0].children[0].children[1].children[0]
-    // todo: restore language setting
-
-    // create the new menu elements
-    let home = document.createElement("td")
-    let timetable = document.createElement("td")
-    homefont = document.createElement("font")
-    timetablefont = document.createElement("font")
-    for (font of [homefont, timetablefont]) {
-        font.setAttribute("color", "#000000")
-        font.setAttribute("size", "2")
-    }
-    home.appendChild(homefont)
-    timetable.appendChild(timetablefont)
-
-    link = document.querySelector("input[name='done-anew/unihd-topnav:anew/unihd:DEFAULT'] ~ a").getAttribute('href')
-    homebutton = createLinkButton(link, "🏠 Home")
-
-    timetablelink = topHeaderWithTimetable.children[0].children[3].children[1].children[0].children[0].children[0].children[0].children[0].getAttribute("href")
-    timetablebutton = createLinkButton(timetablelink, "📅 Sammlung")
-
-    homefont.appendChild(homebutton)
-    timetablefont.appendChild(timetablebutton)
-    home.setAttribute('nowrap', '')
-    timetable.setAttribute('nowrap', '')
-
-    // process the already existing children
-    allNewChildren = [home, timetable]
-    for (child of topHeaderWithSearch.children) {
-        child.removeAttribute('align')
-        child.removeAttribute('valign')
-        child.remove()
-        allNewChildren.push(child)
+    // get Home link
+    var xpath = "//b[text()='Home']";
+    const homeText = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    if (homeText) {
+        const HomeLink = homeText.parentElement.parentElement.getAttribute("href")
+        menuElems.home = [HomeLink, "🏠 Home"]
     }
 
-    // add all children to the menu
-    for (child of allNewChildren) {
-        topHeaderWithSearch.appendChild(child)
+    // get Language link
+    const languageSelector = document.querySelector("input[name='English'], input[name='German']")
+    if (languageSelector) {
+        // get the hidden input as well
+        const languageHiddenInput = document.querySelector("input[type='hidden'][name='submitimg-English'], input[type='hidden'][name='submitimg-German']")
+        menuElems.language = [[languageSelector, languageHiddenInput], "🌐 Sprache"]
     }
-    // at the end: remove the old black header
-    topHeaderWithTimetable.remove()
+
+    // Elements of the lower top header
+
+    // get Search-element
+    const searchSelect = document.querySelector("select[name='search']")
+    if (searchSelect) {
+        // also fix the image color
+        searchSelect.nextElementSibling.nextElementSibling.setAttribute("style", "filter:invert(93%)")
+        searchSelect.parentElement.parentElement.removeAttribute("valign")
+        menuElems.search = [searchSelect.parentElement.parentElement, "🔎 Search"]
+    }
+
+    // get Semester-select-element
+    const semesterSelect = document.querySelector("select[name='semto']")
+    if (semesterSelect) {
+        // also fix the image color
+        semesterSelect.nextElementSibling.nextElementSibling.setAttribute("style", "filter:invert(93%)")
+        semesterSelect.parentElement.parentElement.removeAttribute("align")
+        menuElems.semester = [semesterSelect.parentElement.parentElement, "🏫 Semester"]
+    }
+
+    // add all elements to the menu
+    // Have to do it manually, to get it in the order I want
+    if (_menuHeader) {
+        const menuHeader = _menuHeader.parentElement
+
+        // creates a button for a menu item
+        function createLinkButton(link, name) {
+            const button = document.createElement("a")
+            button.setAttribute("href", link)
+            button.innerText = name
+            button.setAttribute("class", "button")
+            return button
+        }
+
+        // function for adding a new element to the menu header
+        function addToMenu(elem) {
+            let td = document.createElement("td")
+            td.setAttribute("nowrap", "")
+            let font = document.createElement("font")
+            font.setAttribute("color", "#000000")
+            font.setAttribute("size", "2")
+            if (Array.isArray(elem)) {
+                for (e of elem) {
+                    font.appendChild(e)
+                }
+            } else {
+                font.appendChild(elem)
+            }
+            td.appendChild(font)
+            menuHeader.appendChild(td)
+        }
+
+        // manually add elements
+        for (element of ["home", "sammlung"]) {
+            if (menuElems[element]) {
+                addToMenu(createLinkButton(menuElems[element][0], menuElems[element][1]))
+            }
+        }
+
+        for (element of ["search", "semester"]) {
+            menuHeader.appendChild(menuElems[element][0])
+        }
+
+        if (menuElems.language) {
+            addToMenu(menuElems.language[0])
+        }
+
+    }
+
+    // delete the now unnecessary elements, if they exist
+    const topHeader = document.querySelector("td[bgcolor='#000000'][width='114']")
+    if (topHeader) {
+        topHeader.parentElement.remove()
+    }
 }
 
 // Display a counter how many modules are in this category (WP inf) (WIP)
@@ -153,6 +200,7 @@ function countModules() {
 }
 
 // group modules by their ECTS
+// todo: if you choose to "show all modules under this heading", this is still very janky
 function groupByECTS() {
     // find the main table
     const mainTable = document.querySelector("h2 ~ table")
@@ -270,7 +318,8 @@ function replaceCheckboxes() {
     }
 }
 
-// uses Dark Reader to enable dark mode on the site
+// uses Dark Reader to enable dark mode on the site 
+// todo: add light mode option
 function darkMode() {
     // todo: add option to disable dark mode
     DarkReader.enable({
@@ -282,7 +331,7 @@ function darkMode() {
 
 // replaces the logo with a pride version
 function prideLogo() {
-    const logo = document.querySelectorAll("img[src='/img/anew/univis_96_20.gif']")
+    const logo = document.querySelectorAll("img[src='/img/anew/univis_96_20.gif'], img[src='img/anew/univis_96_20.gif']")
     for (instance of logo) {
         instance.setAttribute("src", "https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/logo.png")
     }
@@ -311,4 +360,4 @@ function runAllImprovements() {
 // todo: sort by (options) with headers for each step
 // todo: Filter (ects > x or something, hide exercises, ...)
 // todo: show map next to room on details page or something
-// todo: add better menu
+// todo: prettyfy the basic infotext of the modules - align dates vertically and so on
