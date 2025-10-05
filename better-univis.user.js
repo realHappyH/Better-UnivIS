@@ -46,6 +46,7 @@ function removeCAULink() {
 
 // change the menu to be in a coherent style
 // run after removeCauLink
+// todo: make style unified and prettier
 function menu() {
     // style for different menu elements
     const Style = `
@@ -301,6 +302,10 @@ function groupByECTS() {
         const entries = mainTable.children[0].children
         const ectsAndModules = {};
 
+        // make table a little prettier
+        mainTable.setAttribute("cellspacing", "0")
+        mainTable.setAttribute("cellpadding", "7")
+
         // go through each entry in the table, and add them to a dictionary corresponding to the nr. of ECTS
         let ects = "undefined"
         let previous = ects
@@ -323,7 +328,8 @@ function groupByECTS() {
                 } else if (j > -1) {
                     ects = infotext.substring(j - 3, j - 1)
                     ects = ects.trim()
-                // if it is an exercise, I rely on the fact that the previous entry was the corresponding VL
+                // if it is an exercise, I rely on the fact that the previous entry was the corresponding VL.
+                // todo: sometimes this does not work, especially with other kinds of modules than VL/Ü (seminars, etc)
                 } else if (!infotext.match("V;")){
                     ects = previous
                 } else {
@@ -345,9 +351,15 @@ function groupByECTS() {
         let ectss = Object.keys(ectsAndModules)
         ectss.sort()
         for (ects of ectss) {
+            const headingrow = document.createElement("tr")
+            const headingcol = document.createElement("td")
             const heading = document.createElement("h3")
+            headingrow.setAttribute("valign", "top")
+            headingcol.setAttribute("colspan", "4")
             heading.innerText = ects + " ECTS"
-            mainTable.children[0].appendChild(heading)
+            headingrow.appendChild(headingcol)
+            headingcol.appendChild(heading)
+            mainTable.children[0].appendChild(headingrow)
             for (entry of ectsAndModules[ects]) {
                 const small = entry.querySelector("h4 ~ small")
                 if (small) {
@@ -450,6 +462,8 @@ function runAllImprovements() {
     window.addEventListener("load",runAllImprovements,false)
 })();
 
+// todo: make navigation elements prettier, not ul of links
+// todo: make links look prettier, especially module titles (no underline, other effect instead, make table entry clickable)
 // todo: sort by (options) with headers for each step
 // todo: Filter (ects > x or something, hide exercises, ...)
 // todo: show map next to room on details page or something
