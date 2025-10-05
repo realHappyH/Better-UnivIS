@@ -10,14 +10,6 @@
 // @run-at      document-body
 // ==/UserScript==
 
-// page structure
-// completeDoc = document.querySelector("table tbody")
-// topHeaderWithLogo = completeDoc.children[0].children[0]
-// topHeaderWithTimetable = completeDoc.children[1].children[0].children[0].children[0].children[0].children[1].children[0]
-// topHeaderWithSearch = completeDoc.children[1].children[0].children[0].children[0].children[0].children[1].children[1].children[0].children[0].children[1].children[0].children[0].children[0]
-// leftLinksInBody = completeDoc.children[3].children[0].children
-// mainbody = completeDoc.children[3].children[1]
-
 // get element by its image source
 function getImgBySrc(src) {
     return document.querySelector(`img[src='${src}']`)
@@ -55,19 +47,62 @@ function removeCAULink() {
 // change the menu to be in a coherent style
 // run after removeCauLink
 function menu() {
-    // make button style
-    const buttonStyle = `
-    a.button {
-    padding: 5px 6px;
-    border: 1px outset buttonborder;
-    border-radius: 3px;
-    color: buttontext;
-    background-color: buttonface;
-    text-decoration: none;
+    // style for different menu elements
+    const Style = `
+a.button {
+padding: 5px 6px;
+border: 1px outset buttonborder;
+border-radius: 3px;
+color: buttontext;
+background-color: buttonface;
+text-decoration: none;
 }
+
+ /* Dropdown Button */
+.dropbtn {
+  font-family: Bahnschrift;
+  background-color: #336699;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #ddd;}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {display: block;}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .dropbtn {background-color: #305a85;}
     `
     const stylesheet = document.createElement("style")
-    stylesheet.innerText = buttonStyle
+    stylesheet.innerText = Style
     document.head.appendChild(stylesheet)
 
     // constant to hold all menu elements with their links that exist
@@ -119,6 +154,37 @@ function menu() {
         menuElems.semester = [semesterSelect.parentElement.parentElement, "🏫 Semester"]
     }
 
+    // Side elements (differ from page to page)
+
+    const sideMenuElem = document.querySelector("td[width='150'][valign='top'][height='100%'][bgcolor='#ffffff']")
+    const sideMenu = {}
+    if (sideMenuElem) {
+        var previous = "undefined"
+        // go through all tables that exist in this side menu - they contain the menu elements
+        for (sideMenuTable of sideMenuElem.children) {
+            const headingElem = sideMenuTable.querySelector("b")
+            const sideElemLinks = sideMenuTable.querySelectorAll("a")
+            if (headingElem) {
+                const heading = headingElem.innerText
+                previous = heading
+                sideMenu[heading] = sideElemLinks
+            } else {
+                // if the heading doesn't exist, then the table probably belongs under the previous table's heading
+                // if not, then they are under "Undefined"
+                if (Object.hasOwn(sideMenu, previous)) {
+                    sideMenu[previous].push.apply(sideMenu[previous], sideElemLinks)
+                } else {
+                    sideMenu[previous] = sideElemLinks
+                }
+            }
+        }
+        // remove the side element and reposition the central element
+        const mainElem = sideMenuElem.nextElementSibling
+        sideMenuElem.innerHTML = ''
+        sideMenuElem.setAttribute("width", "10%")
+        mainElem.children[0].setAttribute("width", "90%")
+    }
+
     // add all elements to the menu
     // Have to do it manually, to get it in the order I want
     if (_menuHeader) {
@@ -162,9 +228,35 @@ function menu() {
             menuHeader.appendChild(menuElems[element][0])
         }
 
+        // add the elements from the side menu
+
+        for (heading of Object.keys(sideMenu)) {
+            // create a dropdown menu that has all the links under the current heading
+            dropdownElem = document.createElement("div")
+            dropdownElem.setAttribute("class", "dropdown")
+
+            dropdownButton = document.createElement("button")
+            dropdownButton.setAttribute("class", "dropbtn")
+            dropdownButton.innerText = heading
+
+            dropdownContent = document.createElement("div")
+            dropdownContent.setAttribute("class", "dropdown-content")
+
+            for (link of sideMenu[heading]) {
+                dropdownContent.appendChild(link)
+            }
+
+            dropdownElem.appendChild(dropdownButton)
+            dropdownElem.appendChild(dropdownContent)
+
+            menuHeader.appendChild(dropdownElem)
+        }
+
+        // add the language option last
         if (menuElems.language) {
             addToMenu(menuElems.language[0])
         }
+
 
     }
 
