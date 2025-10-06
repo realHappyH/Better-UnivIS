@@ -10,6 +10,16 @@
 // @run-at      document-body
 // ==/UserScript==
 
+const mainStyle = `
+a {
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+    filter: brightness(120%);
+}
+`
+
 // get element by its image source
 function getImgBySrc(src) {
     return document.querySelector(`img[src='${src}']`)
@@ -46,6 +56,7 @@ function removeCAULink() {
 
 // change the menu to be in a coherent style
 // run after removeCauLink
+// todo: remove the weird black border and bottom thing and replace with hr
 function menu() {
     // style for different menu elements
     const Style = `
@@ -336,7 +347,7 @@ function groupByECTS() {
                     ects = infotext.substring(j - 3, j - 1)
                     ects = ects.trim()
                 // if it is an exercise, I rely on the fact that the previous entry was the corresponding VL.
-                // todo: sometimes this does not work, especially with other kinds of modules than VL/Ü (seminars, etc)
+                // todo: sometimes this does not work, especially with other kinds of modules than VL/Ü (seminars, etc), or if a VL is labelled not as V; but as V/UE;
                 } else if (!infotext.match("V;")){
                     ects = previous
                 } else {
@@ -475,6 +486,13 @@ ul {
         -moz-column-count: 2;
     }
 }
+@media screen and (max-width: 500px) {
+    ul {
+        column-count: 1;
+        -webkit-column-count: 1;
+        -moz-column-count: 1;
+    }
+}
 ul li {
     width: 100%;
 }
@@ -516,6 +534,9 @@ function responsiveWebdesign() {
 
 // runs all of the functions. caution: order important
 function runAllImprovements() {
+    const stylesheet = document.createElement("style")
+    stylesheet.innerText = mainStyle
+    document.head.appendChild(stylesheet)
     responsiveWebdesign()
     changeFont()
     darkMode()
@@ -535,6 +556,10 @@ function runAllImprovements() {
     window.addEventListener("load",runAllImprovements,false)
 })();
 
+// further ideas for the future:
+
+// todo: optimize for both language options
+// todo: optimize for mobile devices
 // todo: remove navigation links that lead nowhere / contain no sub-links or directories / modules
 // todo: make navigation elements prettier, not ul of links
 // todo: make links look prettier, especially module titles (no underline, other effect instead, make table entry clickable)
