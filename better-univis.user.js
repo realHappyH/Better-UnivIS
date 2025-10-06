@@ -461,6 +461,20 @@ ul {
     column-count: 4;
     column-gap: 20px;
 }
+@media screen and (max-width: 1200px) {
+    ul {
+        column-count: 3;
+        -webkit-column-count: 3;
+        -moz-column-count: 3;
+    }
+}
+@media screen and (max-width: 900px) {
+    ul {
+        column-count: 2;
+        -webkit-column-count: 2;
+        -moz-column-count: 2;
+    }
+}
 ul li {
     width: 100%;
 }
@@ -493,8 +507,16 @@ ul a .alternate {
     }
 }
 
+function responsiveWebdesign() {
+    meta = document.createElement("meta")
+    meta.setAttribute("name", "viewport")
+    meta.setAttribute("content", "width=device-width, initial-scale=1.0")
+    document.head.appendChild(meta)
+}
+
 // runs all of the functions. caution: order important
 function runAllImprovements() {
+    responsiveWebdesign()
     changeFont()
     darkMode()
     countModules()
