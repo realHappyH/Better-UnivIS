@@ -449,6 +449,50 @@ function prideLogo() {
     }
 }
 
+// improves the list of links to look a little less overwhelming
+function prettierList() {
+    const Style = `
+ul {
+    list-style-type: none;
+    -moz-column-count: 4;
+    -moz-column-gap: 20px;
+    -webkit-column-count: 4;
+    -webkit-column-gap: 20px;
+    column-count: 4;
+    column-gap: 20px;
+}
+ul li {
+    width: 100%;
+}
+ul a {
+    display: inline-block;
+    text-decoration: none;
+    padding:10px;
+    color: black;
+    width: 100%;
+}
+ul a:hover {
+    background-color: #ddd
+}
+ul a .alternate {
+    background-color: #eeeeee;
+}
+    `
+    const stylesheet = document.createElement("style")
+    stylesheet.innerText = Style
+    document.head.appendChild(stylesheet)
+
+    linklist = document.querySelector("ul")
+    if (linklist) {
+        // sort long lists alphabetically 
+        if (linklist.children.length >= 15) {
+            children = Array.from(linklist.children)
+            children.sort((c1, c2) => c1.innerText.localeCompare(c2.innerText))
+            console.log(children)
+        }
+    }
+}
+
 // runs all of the functions. caution: order important
 function runAllImprovements() {
     changeFont()
@@ -458,6 +502,7 @@ function runAllImprovements() {
     replaceCheckboxes()
     menu()
     prideLogo()
+    prettierList()
     groupByECTS()
 }
 
@@ -468,6 +513,7 @@ function runAllImprovements() {
     window.addEventListener("load",runAllImprovements,false)
 })();
 
+// todo: remove navigation links that lead nowhere / contain no sub-links or directories / modules
 // todo: make navigation elements prettier, not ul of links
 // todo: make links look prettier, especially module titles (no underline, other effect instead, make table entry clickable)
 // todo: sort by (options) with headers for each step
