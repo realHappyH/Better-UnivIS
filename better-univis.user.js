@@ -46,61 +46,69 @@ function removeCAULink() {
 
 // change the menu to be in a coherent style
 // run after removeCauLink
-// todo: make style unified and prettier
 function menu() {
     // style for different menu elements
     const Style = `
-a.button {
-padding: 5px 6px;
-border: 1px outset buttonborder;
-border-radius: 3px;
-color: buttontext;
-background-color: buttonface;
-text-decoration: none;
+.navbar {
+  overflow: hidden;
 }
 
- /* Dropdown Button */
-.dropbtn {
-  font-family: Bahnschrift;
-  background-color: #336699;
+.navbar a {
+  float: left;
+  font-size: 16px;
   color: white;
-  padding: 16px;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+.dropdown {
+  float: left;
+  overflow: hidden;
+}
+
+.dropdown .dropbtn {
+  text-align: center;
   font-size: 16px;
   border: none;
+  outline: none;
+  color: white;
+  padding: 14px 16px;
+  background-color: inherit;
+  font-family: inherit;
+  margin: 0;
 }
 
-/* The container <div> - needed to position the dropdown content */
-.dropdown {
-  position: relative;
-  display: inline-block;
+.navbar a:hover, .dropdown:hover .dropbtn {
+  background-color: #ddd;
 }
 
-/* Dropdown Content (Hidden by Default) */
 .dropdown-content {
   display: none;
   position: absolute;
-  background-color: #f1f1f1;
+  background-color: #f9f9f9;
   min-width: 160px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 1;
 }
 
-/* Links inside the dropdown */
 .dropdown-content a {
+  float: none;
   color: black;
   padding: 12px 16px;
   text-decoration: none;
   display: block;
+  text-align: left;
 }
 
-/* Change color of dropdown links on hover */
-.dropdown-content a:hover {background-color: #ddd;}
+.dropdown-content a:hover {
+  background-color: #ddd;
+}
 
-/* Show the dropdown menu on hover */
-.dropdown:hover .dropdown-content {display: block;}
+.dropdown:hover .dropdown-content {
+  display: block;
+}
 
-/* Change the background color of the dropdown button when the dropdown content is shown */
-.dropdown:hover .dropbtn {background-color: #305a85;}
     `
     const stylesheet = document.createElement("style")
     stylesheet.innerText = Style
@@ -190,15 +198,7 @@ text-decoration: none;
     // Have to do it manually, to get it in the order I want
     if (_menuHeader) {
         const menuHeader = _menuHeader.parentElement
-
-        // creates a button for a menu item
-        function createLinkButton(link, name) {
-            const button = document.createElement("a")
-            button.setAttribute("href", link)
-            button.innerText = name
-            button.setAttribute("class", "button")
-            return button
-        }
+        menuHeader.setAttribute("class", "navbar")
 
         // function for adding a new element to the menu header
         function addToMenu(elem) {
@@ -221,12 +221,15 @@ text-decoration: none;
         // manually add elements
         for (element of ["home", "sammlung"]) {
             if (menuElems[element]) {
-                addToMenu(createLinkButton(menuElems[element][0], menuElems[element][1]))
-            }
-        }
 
-        for (element of ["search", "semester"]) {
-            menuHeader.appendChild(menuElems[element][0])
+                menuItem = document.createElement("a")
+                menuItem.setAttribute("href", menuElems[element][0])
+                menuItem.setAttribute("class", "nav-link")
+                menuItem.innerText = menuElems[element][1]
+
+                menuHeader.appendChild(menuItem)
+                //addToMenu(createLinkButton(menuElems[element][0], menuElems[element][1]))
+            }
         }
 
         // add the elements from the side menu
@@ -236,7 +239,7 @@ text-decoration: none;
             dropdownElem = document.createElement("div")
             dropdownElem.setAttribute("class", "dropdown")
 
-            dropdownButton = document.createElement("button")
+            dropdownButton = document.createElement("div")
             dropdownButton.setAttribute("class", "dropbtn")
             dropdownButton.innerText = heading
 
@@ -251,6 +254,10 @@ text-decoration: none;
             dropdownElem.appendChild(dropdownContent)
 
             menuHeader.appendChild(dropdownElem)
+        }
+
+        for (element of ["search", "semester"]) {
+            menuHeader.appendChild(menuElems[element][0])
         }
 
         // add the language option last
@@ -443,7 +450,6 @@ function prideLogo() {
 }
 
 // runs all of the functions. caution: order important
-// todo: refactor so that the order is no longer so important
 function runAllImprovements() {
     changeFont()
     darkMode()
