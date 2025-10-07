@@ -67,6 +67,12 @@ function menu() {
   padding: 14px;
 }
 
+#language {
+  width: 10%;
+  padding-left: 0;
+  padding-right: 0;
+}
+
 .navbar img {
   float: left;
 }
@@ -267,18 +273,6 @@ function menu() {
         navDiv.appendChild(dropdownElem)
     }
 
-    // add the search and semester options
-
-    for (element of ["search", "semester"]) {
-        if (element in menuElems) {
-            const item = document.createElement("div")
-            item.setAttribute("class", "nav-right")
-            item.setAttribute("id", element)
-            item.appendChild(menuElems[element][0])
-            navDiv.appendChild(item)
-        }
-    }
-
     // add the language option
 
     if (menuElems.language) {
@@ -289,6 +283,18 @@ function menu() {
             div.appendChild(item)
         }
         navDiv.appendChild(div)
+    }
+
+    // add the search and semester options
+
+    for (element of ["search", "semester"]) {
+        if (element in menuElems) {
+            const item = document.createElement("div")
+            item.setAttribute("class", "nav-right")
+            item.setAttribute("id", element)
+            item.appendChild(menuElems[element][0])
+            navDiv.appendChild(item)
+        }
     }
 
     // append the new menu to the top of the document
@@ -515,11 +521,11 @@ ul a {
     display: inline-block;
     text-decoration: none;
     padding:10px;
-    color: black;
     width: 100%;
 }
 ul a:hover {
-    background-color: #ddd
+    background-color: #ddd;
+    text-decoration: none;
 }
 ul a .alternate {
     background-color: #eeeeee;
@@ -574,8 +580,6 @@ function runAllImprovements() {
 // todo: optimize for both language options
 // todo: optimize for mobile devices
 // todo: remove navigation links that lead nowhere / contain no sub-links or directories / modules
-// todo: make navigation elements prettier, not ul of links
-// todo: make links look prettier, especially module titles (no underline, other effect instead, make table entry clickable)
 // todo: sort by (options) with headers for each step
 // todo: Filter (ects > x or something, hide exercises, ...)
 // todo: show map next to room on details page or something
