@@ -38,22 +38,6 @@ function changeFont() {
     }
 }
 
-// remove the big CAU image that links to the CAU Main page
-function removeCAULink() {
-    const cauElement = document.querySelector("td[bgcolor='#eeeeee'][width='148'][rowspan='2']")
-    const bgElement = document.querySelector("td[colspan='1'][rowspan='2'][bgcolor='#003366'][width='1']")
-    const sideElement = document.querySelector("table[width='100%'] tbody")
-    if (cauElement && bgElement && sideElement) {
-        cauElement.remove()
-        bgElement.remove()
-        try {
-            sideElement.children[1].children[0].children[0].children[0].children[0].remove()
-        } catch {
-            console.log("side element could not be removed")
-        }
-    }
-}
-
 // change the menu to be in a coherent style
 // run after removeCauLink
 // todo: remove the weird black border and bottom thing and replace with hr
@@ -61,7 +45,30 @@ function menu() {
     // style for different menu elements
     const Style = `
 .navbar {
-  overflow: hidden;
+  position: fixed;
+  top: 0;
+  background-color: #eeeeee;
+  width: 100%;
+  height: 50px;
+  z-index: 999;
+}
+
+.nav-container {
+  background-color: #eeeeee;
+}
+
+.nav-placeholder {
+  height: 50px;
+}
+
+.nav-right {
+  float: right;
+  text-align: center;
+  padding: 14px;
+}
+
+.navbar img {
+  float: left;
 }
 
 .navbar a {
@@ -127,7 +134,6 @@ function menu() {
 
     // constant to hold all menu elements with their links that exist
     const menuElems = {}
-    const _menuHeader = document.querySelector("td[nowrap=''][valign='middle']")
 
     // Elements of the black top header
 
@@ -205,84 +211,101 @@ function menu() {
         mainElem.children[0].setAttribute("width", "90%")
     }
 
+    // create the new nav bar in all cases
+    const newMenu = document.createElement("nav")
+    newMenu.setAttribute("class", "navbar")
+    const navDiv = document.createElement("div")
+    navDiv.setAttribute("class", "nav-container")
+    const navPlaceholder = document.createElement("div")
+    navPlaceholder.setAttribute("class", "nav-placeholder")
+    newMenu.appendChild(navDiv)
+
+    // add the pride logo to the menu
+    const logo = document.createElement("img")
+    logo.setAttribute("class", "pride-logo")
+    logo.setAttribute("src", "https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/logo.png")
+    logo.setAttribute("alt", "UnivIS")
+    logo.setAttribute("title", "Informationssystem der Universität Kiel")
+    logo.setAttribute("width", "10%")
+    navDiv.appendChild(logo)
+
     // add all elements to the menu
-    // Have to do it manually, to get it in the order I want
-    if (_menuHeader) {
-        const menuHeader = _menuHeader.parentElement
-        menuHeader.setAttribute("class", "navbar")
 
-        // function for adding a new element to the menu header
-        function addToMenu(elem) {
-            let td = document.createElement("td")
-            td.setAttribute("nowrap", "")
-            let font = document.createElement("font")
-            font.setAttribute("color", "#000000")
-            font.setAttribute("size", "2")
-            if (Array.isArray(elem)) {
-                for (e of elem) {
-                    font.appendChild(e)
-                }
-            } else {
-                font.appendChild(elem)
-            }
-            td.appendChild(font)
-            menuHeader.appendChild(td)
+    // add Home and Sammlung links, if they exist
+    for (element of ["home", "sammlung"]) {
+        if (element in menuElems) {
+            menuItem = document.createElement("a")
+            menuItem.setAttribute("href", menuElems[element][0])
+            menuItem.setAttribute("class", "nav-link")
+            menuItem.innerText = menuElems[element][1]
+
+            navDiv.appendChild(menuItem)
+        }
+    }
+
+    // add the elements from the side menu
+
+    for (heading of Object.keys(sideMenu)) {
+        // create a dropdown menu that has all the links under the current heading
+        dropdownElem = document.createElement("div")
+        dropdownElem.setAttribute("class", "dropdown")
+
+        dropdownButton = document.createElement("div")
+        dropdownButton.setAttribute("class", "dropbtn")
+        dropdownButton.innerText = heading
+
+        dropdownContent = document.createElement("div")
+        dropdownContent.setAttribute("class", "dropdown-content")
+
+        for (link of sideMenu[heading]) {
+            dropdownContent.appendChild(link)
         }
 
-        // manually add elements
-        for (element of ["home", "sammlung"]) {
-            if (menuElems[element]) {
+        dropdownElem.appendChild(dropdownButton)
+        dropdownElem.appendChild(dropdownContent)
 
-                menuItem = document.createElement("a")
-                menuItem.setAttribute("href", menuElems[element][0])
-                menuItem.setAttribute("class", "nav-link")
-                menuItem.innerText = menuElems[element][1]
+        navDiv.appendChild(dropdownElem)
+    }
 
-                menuHeader.appendChild(menuItem)
-                //addToMenu(createLinkButton(menuElems[element][0], menuElems[element][1]))
-            }
+    // add the search and semester options
+
+    for (element of ["search", "semester"]) {
+        if (element in menuElems) {
+            const item = document.createElement("div")
+            item.setAttribute("class", "nav-right")
+            item.setAttribute("id", element)
+            item.appendChild(menuElems[element][0])
+            navDiv.appendChild(item)
         }
+    }
 
-        // add the elements from the side menu
+    // add the language option
 
-        for (heading of Object.keys(sideMenu)) {
-            // create a dropdown menu that has all the links under the current heading
-            dropdownElem = document.createElement("div")
-            dropdownElem.setAttribute("class", "dropdown")
-
-            dropdownButton = document.createElement("div")
-            dropdownButton.setAttribute("class", "dropbtn")
-            dropdownButton.innerText = heading
-
-            dropdownContent = document.createElement("div")
-            dropdownContent.setAttribute("class", "dropdown-content")
-
-            for (link of sideMenu[heading]) {
-                dropdownContent.appendChild(link)
-            }
-
-            dropdownElem.appendChild(dropdownButton)
-            dropdownElem.appendChild(dropdownContent)
-
-            menuHeader.appendChild(dropdownElem)
+    if (menuElems.language) {
+        const div = document.createElement("div")
+        div.setAttribute("class", "nav-right")
+        div.setAttribute("id", "language")
+        for (item of menuElems.language[0]) {
+            div.appendChild(item)
         }
+        navDiv.appendChild(div)
+    }
 
-        for (element of ["search", "semester"]) {
-            menuHeader.appendChild(menuElems[element][0])
-        }
-
-        // add the language option last
-        if (menuElems.language) {
-            addToMenu(menuElems.language[0])
-        }
-
-
+    // append the new menu to the top of the document
+    const mainForm = document.body.querySelector("form")
+    if (mainForm) {
+        mainForm.prepend(navPlaceholder)
+        mainForm.prepend(newMenu)
     }
 
     // delete the now unnecessary elements, if they exist
-    const topHeader = document.querySelector("td[bgcolor='#000000'][width='114']")
-    if (topHeader) {
-        topHeader.parentElement.remove()
+    const mainTable = document.body.querySelector("table tbody")
+    if (mainTable) {
+        tableHTML = mainTable.innerHTML
+        let end = tableHTML.indexOf("<!-- END of unihd -->")
+        let toDelete = tableHTML.substring(0, end)
+        tableHTML = tableHTML.replace(toDelete, '')
+        mainTable.innerHTML = tableHTML
     }
 }
 
@@ -452,14 +475,6 @@ function darkMode() {
     })
 }
 
-// replaces the logo with a pride version
-function prideLogo() {
-    const logo = document.querySelectorAll("img[src='/img/anew/univis_96_20.gif'], img[src='img/anew/univis_96_20.gif']")
-    for (instance of logo) {
-        instance.setAttribute("src", "https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/logo.png")
-    }
-}
-
 // improves the list of links to look a little less overwhelming
 function prettierList() {
     const Style = `
@@ -541,10 +556,8 @@ function runAllImprovements() {
     changeFont()
     darkMode()
     countModules()
-    removeCAULink()
     replaceCheckboxes()
     menu()
-    prideLogo()
     prettierList()
     groupByECTS()
 }
