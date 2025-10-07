@@ -12,3 +12,11 @@ Mit Vorsicht genießen. Noch sehr buggy und nur für die Seiten der Informatik u
 ## Aktualisieren
 
 Man kann das Skript jederzeit aktualisieren, wenn man den o.g. Link erneut aufruft.
+
+## Impressionen
+
+Vorher:
+![before](./assets/before.png)
+
+Nachher:
+![after](./assets/after.png)
