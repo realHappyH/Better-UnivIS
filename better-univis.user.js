@@ -534,16 +534,6 @@ ul a .alternate {
     const stylesheet = document.createElement("style")
     stylesheet.innerText = Style
     document.head.appendChild(stylesheet)
-
-    linklist = document.querySelector("ul")
-    if (linklist) {
-        // sort long lists alphabetically 
-        if (linklist.children.length >= 15) {
-            children = Array.from(linklist.children)
-            children.sort((c1, c2) => c1.innerText.localeCompare(c2.innerText))
-            console.log(children)
-        }
-    }
 }
 
 function responsiveWebdesign() {
