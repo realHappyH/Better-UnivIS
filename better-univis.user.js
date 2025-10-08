@@ -182,18 +182,12 @@ function menu() {
     // get Search-element
     const searchSelect = document.querySelector("select[name='search']")
     if (searchSelect) {
-        // also fix the image color
-        searchSelect.nextElementSibling.nextElementSibling.setAttribute("style", "filter:invert(93%)")
-        searchSelect.parentElement.parentElement.removeAttribute("valign")
         menuElems.search = [searchSelect.parentElement.parentElement, "🔎 Search"]
     }
 
     // get Semester-select-element
     const semesterSelect = document.querySelector("select[name='semto']")
     if (semesterSelect) {
-        // also fix the image color
-        semesterSelect.nextElementSibling.nextElementSibling.setAttribute("style", "filter:invert(93%)")
-        semesterSelect.parentElement.parentElement.removeAttribute("align")
         menuElems.semester = [semesterSelect.parentElement.parentElement, "🏫 Semester"]
     }
 
