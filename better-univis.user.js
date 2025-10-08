@@ -240,7 +240,7 @@ function menu() {
     // add the pride logo to the menu
     const logo = document.createElement("img")
     logo.setAttribute("class", "pride-logo")
-    logo.setAttribute("src", "https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/logo.png")
+    logo.setAttribute("src", "https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/logo.svg")
     logo.setAttribute("alt", "UnivIS")
     logo.setAttribute("title", "Informationssystem der Universität Kiel")
     logo.setAttribute("width", "10%")
