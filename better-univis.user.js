@@ -73,6 +73,14 @@ function menu() {
   padding-right: 0;
 }
 
+#oldsemester {
+  display: none;
+}
+
+#oldsearch {
+  display: none;
+}
+
 .navbar img {
   float: left;
 }
@@ -114,9 +122,12 @@ function menu() {
   min-width: 160px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 1;
+  max-height: 30vh;
+  overflow: scroll;
 }
 
-.dropdown-content a {
+.dropdown-content a, .dropdown-content div {
+  cursor: pointer;
   float: none;
   color: black;
   padding: 12px 16px;
@@ -125,7 +136,7 @@ function menu() {
   text-align: left;
 }
 
-.dropdown-content a:hover {
+.dropdown-content a:hover, .dropdown-content div:hover{
   background-color: #ddd;
 }
 
@@ -249,18 +260,66 @@ function menu() {
         }
     }
 
+    // add the search and semester options in new style
+
+    for (element of ["search", "semester"]) {
+        if (element in menuElems) {
+            const dropdownElem = document.createElement("div")
+            dropdownElem.setAttribute("class", "dropdown")
+
+            const dropdownButton = document.createElement("div")
+            dropdownButton.setAttribute("class", "dropbtn")
+            dropdownButton.innerText = menuElems[element][1]
+
+            // display current semester in semester dropdown
+            if (element == "semester") {
+                dropdownButton.innerText = `${dropdownButton.innerText}: ${semesterSelect.value}`
+            }
+
+            const dropdownContent = document.createElement("div")
+            dropdownContent.setAttribute("class", "dropdown-content")
+
+            const old = menuElems[element][0]
+            const options = old.children[0].children[0].children
+
+            // add the options to the dropdown
+            for (option of options) {
+                const selectOption = document.createElement("div")
+                selectOption.innerText = option.innerText
+                selectOption.setAttribute("value",option.getAttribute("value"))
+
+                // add corresponding event listeners
+                if (element == "search") {
+                    selectOption.addEventListener('click', search)
+                } else {
+                    selectOption.addEventListener('click', semester)
+                }
+                dropdownContent.appendChild(selectOption)
+            }
+            dropdownElem.appendChild(dropdownButton)
+            dropdownElem.appendChild(dropdownContent)
+            navDiv.appendChild(dropdownElem)
+
+            // hide old options (css)
+            const hidden = document.createElement("div")
+            hidden.setAttribute("id", `old${element}`)
+            hidden.appendChild(old)
+            navDiv.appendChild(hidden)
+        }
+    }
+
     // add the elements from the side menu
 
     for (heading of Object.keys(sideMenu)) {
         // create a dropdown menu that has all the links under the current heading
-        dropdownElem = document.createElement("div")
+        const dropdownElem = document.createElement("div")
         dropdownElem.setAttribute("class", "dropdown")
 
-        dropdownButton = document.createElement("div")
+        const dropdownButton = document.createElement("div")
         dropdownButton.setAttribute("class", "dropbtn")
         dropdownButton.innerText = heading
 
-        dropdownContent = document.createElement("div")
+        const dropdownContent = document.createElement("div")
         dropdownContent.setAttribute("class", "dropdown-content")
 
         for (link of sideMenu[heading]) {
@@ -283,18 +342,6 @@ function menu() {
             div.appendChild(item)
         }
         navDiv.appendChild(div)
-    }
-
-    // add the search and semester options
-
-    for (element of ["search", "semester"]) {
-        if (element in menuElems) {
-            const item = document.createElement("div")
-            item.setAttribute("class", "nav-right")
-            item.setAttribute("id", element)
-            item.appendChild(menuElems[element][0])
-            navDiv.appendChild(item)
-        }
     }
 
     // append the new menu to the top of the document
@@ -556,6 +603,24 @@ function runAllImprovements() {
     menu()
     prettierList()
     groupByECTS()
+}
+
+// functionality of the new search and semester dropdowns
+
+function search(event) {
+    const option = event.currentTarget
+    const searchSelect = document.querySelector("select[name='search']")
+    searchSelect.value = option.getAttribute("value")
+    const searchGo = document.querySelector("input[name='Search']")
+    searchGo.click()
+}
+
+function semester(event) {
+    const option = event.currentTarget
+    const semesterSelect = document.querySelector("select[name='semto']")
+    semesterSelect.value = option.getAttribute("value")
+    const semesterGo = document.querySelector("input[name='Semester']")
+    semesterGo.click()
 }
 
 // main part of the user script
