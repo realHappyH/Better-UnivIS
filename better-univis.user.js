@@ -477,15 +477,15 @@ function replaceCheckboxes() {
     }
 
     // remove the useless "Auswahl hinzufügen" options
-    const optionNames = ["hinzufügen", "löschen", "einschränken"]
+    const optionNames = ["hinzufügen", "löschen", "einschränken", "anzeigen"]
     const uselessOptions = optionNames.map(name => document.querySelectorAll(`input[name='${name}']`))
-    if (uselessOptions.reduce((acc, cur) => acc && cur)) {
-        for (options of uselessOptions) {
-            for (option of options) {
-                option.remove()
-            }
+
+    for (options of uselessOptions) {
+        for (option of options) {
+            option.remove()
         }
     }
+
 
     // replace the ugly checkbox images with better images
     // todo: it is not easily possible to replace the images with actual html checkboxes. Maybe find out how?
