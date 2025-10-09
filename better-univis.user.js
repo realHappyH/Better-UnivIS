@@ -593,7 +593,9 @@ ul a .alternate {
     `
     const stylesheet = document.createElement("style")
     stylesheet.innerText = Style
-    if (!document.querySelector("input[name='pers']")) {
+    const dont_style = ["pers", "lvs"]
+    const check = dont_style.map(name => document.querySelector(`input[name='${name}']`)).reduce((acc, cur) => acc || cur)
+    if (!check) {
         document.head.appendChild(stylesheet)
     }
 }
