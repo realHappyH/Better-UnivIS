@@ -593,7 +593,9 @@ ul a .alternate {
     `
     const stylesheet = document.createElement("style")
     stylesheet.innerText = Style
-    document.head.appendChild(stylesheet)
+    if (!document.querySelector("input[name='pers']")) {
+        document.head.appendChild(stylesheet)
+    }
 }
 
 function responsiveWebdesign() {
