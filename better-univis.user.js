@@ -43,6 +43,10 @@ function changeFont() {
 function menu() {
     // style for different menu elements
     const Style = `
+.pride-logo {
+  max-height: 50px;
+}
+
 .navbar {
   position: fixed;
   top: 0;
@@ -593,6 +597,7 @@ ul a .alternate {
     `
     const stylesheet = document.createElement("style")
     stylesheet.innerText = Style
+    // look for certain <input> tags that only exist on pages where we don't want the new style
     const dont_style = ["pers", "lvs"]
     const check = dont_style.map(name => document.querySelector(`input[name='${name}']`)).reduce((acc, cur) => acc || cur)
     if (!check) {
