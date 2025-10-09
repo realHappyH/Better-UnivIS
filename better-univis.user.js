@@ -362,23 +362,21 @@ function menu() {
 // Display a counter how many modules are in this category (WP inf) (WIP)
 function countModules() {
     // todo: make this work if there is also titles between the modules
-    const mainTable = document.querySelector("table[border='0'][width='100%'][cellspacing='17'][cellpadding='0'] tbody")
-    if(mainTable) {
-        try {
-            const modules = mainTable.children[1].children[0].children[3].children[0].children
-            if (modules.length > 0) {
-                let count = 0
-                for (mod of modules) {
-                    if (mod.innerText.match('V;')) {
-                        count++
-                    }
+    const moduleTableElement = document.querySelector("tbody tr[valign='top'][bgcolor='#eeeeee']")
+    if(moduleTableElement) {
+        const modules = moduleTableElement.parentElement.children
+        if (modules.length > 0) {
+            let count = 0
+            for (mod of modules) {
+                // count everything except Exercises
+                if (mod.innerText.match(/\sV;|\sS;|\sPRUE/)) {
+                    count++
                 }
-                const heading = mainTable.children[1].children[0].children[0]
+            }
+            const heading = document.querySelector("h2")
+            if (heading) {
                 heading.innerText = `${heading.innerText} (${count} modules)`
             }
-        } catch {
-            // we are not in a table with modules
-            console.log("Main table not found")
         }
     }
 }
