@@ -5,7 +5,7 @@
 // @grant       none
 // @version     1.0
 // @author      HappyH
-// @description Verbessert UnivIS
+// @description Verbessert UnivIS 
 // @require     https://unpkg.com/darkreader@4.9.105/darkreader.js#sha512=2b7f8f0cb074b0f1ca650f8feb81e345232a9f973257481dc0f56e8fcabb44f052e591f9039b684490c4e650bb71024f365fa085539a4213ad21bd7f15d28e93
 // @run-at      document-body
 // ==/UserScript==
@@ -40,7 +40,6 @@ function changeFont() {
 
 // change the menu to be in a coherent style
 // run after removeCauLink
-// todo: remove the weird black border and bottom thing and replace with hr
 function menu() {
     // style for different menu elements
     const Style = `
@@ -486,26 +485,46 @@ function replaceCheckboxes() {
         }
     }
 
-
     // replace the ugly checkbox images with better images
     // todo: it is not easily possible to replace the images with actual html checkboxes. Maybe find out how?
     const checkboxNames = ["samm", "samm_yes"]
     const uglyCheckboxes = checkboxNames.map(
         name => [
             name, document.querySelectorAll(`input[type='image'][src='/img/anew/${name}.gif']`)
-        ])
+        ]
+    )
     const style = "filter:invert(93%)"
-    if (uglyCheckboxes.reduce((acc, cur) => acc && cur[1])) {
-        for ([checkboxName, checkboxes] of uglyCheckboxes) {
-            for (checkbox of checkboxes) {
-                checkbox.setAttribute("width", "30px")
-                checkbox.setAttribute("height", "30px")
-                checkbox.setAttribute("style", style)
-                if (checkboxName == "samm") {
-                    checkbox.setAttribute("src", "https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/checkbox-unchecked.svg")
-                } else {
-                    checkbox.setAttribute("src", "https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/checkbox-checked.svg")
-                }
+    for ([checkboxName, checkboxes] of uglyCheckboxes) {
+        for (checkbox of checkboxes) {
+            checkbox.setAttribute("width", "30px")
+            checkbox.setAttribute("height", "30px")
+            checkbox.setAttribute("style", style)
+            if (checkboxName == "samm") {
+                checkbox.setAttribute("src", "https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/checkbox-unchecked.svg")
+            } else {
+                checkbox.setAttribute("src", "https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/checkbox-checked.svg")
+            }
+        }
+    }
+
+    // replace the ugly checkboxes from the timetable view
+    // todo: center checkboxes
+    const timetableCheckboxNames = ["checkb", "checkb_s"]
+    const timetableCheckboxes = timetableCheckboxNames.map(
+        name => [
+            name, document.querySelectorAll(`img[src='/img/anew/${name}.gif']`)
+        ]
+    )
+    for ([checkboxName, checkboxes] of timetableCheckboxes) {
+        for (checkbox of checkboxes) {
+            checkbox.setAttribute("width", "20px")
+            checkbox.setAttribute("height", "20px")
+            checkbox.removeAttribute("align")
+            checkbox.setAttribute("style", style)
+            if (checkboxName == "checkb") {
+                checkbox.setAttribute("src", "https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/checkbox-unchecked.svg")
+            } else {
+                checkbox.setAttribute("src", "https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/checkbox-checked.svg")
             }
         }
     }
@@ -626,6 +645,7 @@ function semester(event) {
 
 // further ideas for the future:
 
+// todo: replace Ancient HTML tags that are not supported any more (such as <font>)
 // todo: optimize for both language options
 // todo: optimize for mobile devices
 // todo: remove navigation links that lead nowhere / contain no sub-links or directories / modules
