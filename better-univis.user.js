@@ -39,7 +39,6 @@ function changeFont() {
 }
 
 // change the menu to be in a coherent style
-// run after removeCauLink
 function menu() {
     // style for different menu elements
     const Style = `
@@ -365,18 +364,16 @@ function countModules() {
     const moduleTableElement = document.querySelector("tbody tr[valign='top'][bgcolor='#eeeeee']")
     if(moduleTableElement) {
         const modules = moduleTableElement.parentElement.children
-        if (modules.length > 0) {
-            let count = 0
-            for (mod of modules) {
-                // count everything except Exercises
-                if (mod.innerText.match(/\sV;|\sS;|\sPRUE/)) {
-                    count++
-                }
+        let count = 0
+        for (mod of modules) {
+            // count everything except Exercises
+            if (mod.innerText.match(/\sV;|\sS;|\sPRUE/)) {
+                count++
             }
-            const heading = document.querySelector("h2")
-            if (heading) {
-                heading.innerText = `${heading.innerText} (${count} modules)`
-            }
+        }
+        const heading = document.querySelector("h2")
+        if (heading) {
+            heading.innerText = `${heading.innerText} (${count} modules)`
         }
     }
 }
