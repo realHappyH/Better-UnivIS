@@ -19,6 +19,10 @@ a:hover {
     filter: brightness(120%);
 }
 `
+// returns true iff language is set to german
+function german() {
+    return !!document.querySelector("input[name='English']")
+}
 
 // get element by its image source
 function getImgBySrc(src) {
@@ -160,7 +164,11 @@ function menu() {
     const sammlungImg = getImgBySrc("/img/anew/samm_inv.gif")
     if (sammlungImg) {
         const sammlungLink = menuElems.sammlung = sammlungImg.parentElement.getAttribute("href")
-        menuElems.sammlung = [sammlungLink, "📅 Sammlung"]
+        if (german()) {
+            menuElems.sammlung = [sammlungLink, "📅 Sammlung"]
+        } else {
+            menuElems.sammlung = [sammlungLink, "📅 Collection"]
+        }
     }
 
     // get Home link
@@ -184,7 +192,11 @@ function menu() {
     // get Search-element
     const searchSelect = document.querySelector("select[name='search']")
     if (searchSelect) {
-        menuElems.search = [searchSelect.parentElement.parentElement, "🔎 Search"]
+        if (german()) {
+            menuElems.search = [searchSelect.parentElement.parentElement, "🔎 Suche"]
+        } else {
+            menuElems.search = [searchSelect.parentElement.parentElement, "🔎 Search"]
+        }
     }
 
     // get Semester-select-element
@@ -238,7 +250,11 @@ function menu() {
     logo.setAttribute("class", "pride-logo")
     logo.setAttribute("src", "https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/logo.svg")
     logo.setAttribute("alt", "UnivIS")
-    logo.setAttribute("title", "Informationssystem der Universität Kiel")
+    if (german()) {
+        logo.setAttribute("title", "Informationssystem der Universität Kiel")
+    } else {
+        logo.setAttribute("title", "Information system of Kiel University")
+    }
     logo.setAttribute("width", "10%")
     navDiv.appendChild(logo)
 
