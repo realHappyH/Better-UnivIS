@@ -16,7 +16,6 @@ a {
 }
 a:hover {
     text-decoration: underline;
-    filter: brightness(120%);
 }
 `
 // returns true iff language is set to german
@@ -73,10 +72,36 @@ function menu() {
   padding: 14px;
 }
 
+.nav-right#mode {
+  height: 40px;
+  padding: 5px;
+  width: 5%;
+  display: flex;
+  justify-content: center;
+}
+
+.nav-right#mode:hover {
+  background-color: #dddddd;
+  cursor: pointer;
+}
+
+.nav-right#mode img {
+  height: 40px;
+  margin: auto;
+}
+
+
 #language {
-  width: 10%;
+  width: 5%;
+  padding: 18px;
   padding-left: 0;
   padding-right: 0;
+  display: flex;
+  justify-content:center;
+}
+
+#language img {
+  margin: auto;
 }
 
 #oldsemester {
@@ -94,7 +119,7 @@ function menu() {
 .navbar a {
   float: left;
   font-size: 16px;
-  color: white;
+  color: black;
   text-align: center;
   padding: 14px 16px;
   text-decoration: none;
@@ -110,7 +135,7 @@ function menu() {
   font-size: 16px;
   border: none;
   outline: none;
-  color: white;
+  color: black;
   padding: 14px 16px;
   background-color: inherit;
   font-family: inherit;
@@ -356,6 +381,19 @@ function menu() {
         navDiv.appendChild(div)
     }
 
+    // add light mode/dark mode option
+    const lightdiv = document.createElement("div")
+    lightdiv.setAttribute("class", "nav-right")
+    lightdiv.setAttribute("id", "mode")
+    const lightbutton = document.createElement("img")
+    lightbutton.setAttribute("src", "https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/darkmode.svg")
+    if (DarkReader.isEnabled()) {
+        lightbutton.setAttribute("style", "filter:invert(93%)")
+    }
+    lightdiv.appendChild(lightbutton)
+    navDiv.appendChild(lightdiv)
+    lightdiv.addEventListener("click", toggleMode)
+
     // append the new menu to the top of the document
     const mainForm = document.body.querySelector("form")
     if (mainForm) {
@@ -508,12 +546,14 @@ function replaceCheckboxes() {
             name, document.querySelectorAll(`input[type='image'][src='/img/anew/${name}.gif']`)
         ]
     )
-    const style = "filter:invert(93%)"
+    const darkStyle = "filter:invert(93%)"
     for ([checkboxName, checkboxes] of uglyCheckboxes) {
         for (checkbox of checkboxes) {
             checkbox.setAttribute("width", "30px")
             checkbox.setAttribute("height", "30px")
-            checkbox.setAttribute("style", style)
+            if (DarkReader.isEnabled()) {
+                checkbox.setAttribute("style", darkStyle)
+            }
             if (checkboxName == "samm") {
                 checkbox.setAttribute("src", "https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/checkbox-unchecked.svg")
             } else {
@@ -535,7 +575,9 @@ function replaceCheckboxes() {
             checkbox.setAttribute("width", "20px")
             checkbox.setAttribute("height", "20px")
             checkbox.removeAttribute("align")
-            checkbox.setAttribute("style", style)
+            if (DarkReader.isEnabled()) {
+                checkbox.setAttribute("style", darkStyle)
+            }
             if (checkboxName == "checkb") {
                 checkbox.setAttribute("src", "https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/checkbox-unchecked.svg")
             } else {
@@ -546,16 +588,22 @@ function replaceCheckboxes() {
 }
 
 // uses Dark Reader to enable dark mode on the site 
-// todo: add light mode option
-function darkMode() {
-    // todo: add option to disable dark mode
-    DarkReader.enable({
+function toggleMode() {
+    const currentTheme = document.body.className;
+    if (currentTheme == "dark") {
+        document.body.className = "light"
+        DarkReader.disable()
+    } else {
+        document.body.className = "dark"
+        DarkReader.enable({
             brightness: 100,
             contrast: 90,
             sepia: 10
-    })
+        })
+    }
+    localStorage.setItem("theme", document.body.className)
+    location.reload()
 }
-
 // improves the list of links to look a little less overwhelming
 function prettierList() {
     const Style = `
@@ -630,7 +678,15 @@ function runAllImprovements() {
     document.head.appendChild(stylesheet)
     responsiveWebdesign()
     changeFont()
-    darkMode()
+    const theme = localStorage.getItem("theme") || "dark"
+    document.body.className = theme
+    if (theme == "dark") {
+        DarkReader.enable({
+            brightness: 100,
+            contrast: 90,
+            sepia: 10
+        })
+    }
     countModules()
     replaceCheckboxes()
     menu()
