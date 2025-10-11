@@ -69,7 +69,6 @@ function menu() {
 .nav-right {
   float: right;
   text-align: center;
-  padding: 14px;
 }
 
 .nav-right#mode {
@@ -91,17 +90,23 @@ function menu() {
 }
 
 
-#language {
+.nav-right#language {
   width: 5%;
-  padding: 18px;
   padding-left: 0;
   padding-right: 0;
   display: flex;
   justify-content:center;
 }
 
-#language img {
+.nav-right#language input {
   margin: auto;
+  padding: 15px;
+  height: 20px;
+  width: 33px;
+}
+
+.nav-right#language:hover {
+  background-color: #dddddd;
 }
 
 #oldsemester {
@@ -207,6 +212,12 @@ function menu() {
     // get Language link
     const languageSelector = document.querySelector("input[name='English'], input[name='German']")
     if (languageSelector) {
+        // change the image
+        if (languageSelector.getAttribute("name") == "English") {
+            languageSelector.setAttribute("src", "https://upload.wikimedia.org/wikipedia/commons/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg")
+        } else {
+            languageSelector.setAttribute("src", "https://upload.wikimedia.org/wikipedia/commons/b/ba/Flag_of_Germany.svg")
+        }
         // get the hidden input as well
         const languageHiddenInput = document.querySelector("input[type='hidden'][name='submitimg-English'], input[type='hidden'][name='submitimg-German']")
         menuElems.language = [[languageSelector, languageHiddenInput], "🌐 Sprache"]
@@ -722,7 +733,6 @@ function semester(event) {
 // further ideas for the future:
 
 // todo: replace Ancient HTML tags that are not supported any more (such as <font>)
-// todo: optimize for both language options
 // todo: optimize for mobile devices
 // todo: remove navigation links that lead nowhere / contain no sub-links or directories / modules
 // todo: sort by (options) with headers for each step
