@@ -5,7 +5,7 @@
 // @grant       none
 // @version     1.0
 // @author      HappyH
-// @description Verbessert UnivIS 
+// @description Verbessert UnivIS
 // @require     https://unpkg.com/darkreader@4.9.105/darkreader.js#sha512=2b7f8f0cb074b0f1ca650f8feb81e345232a9f973257481dc0f56e8fcabb44f052e591f9039b684490c4e650bb71024f365fa085539a4213ad21bd7f15d28e93
 // @run-at      document-body
 // ==/UserScript==
@@ -19,27 +19,27 @@ a {
 a:hover {
     text-decoration: underline;
 }
-`
+`;
 // returns true iff language is set to german
 function german() {
-    return !!document.querySelector("input[name='English']")
+    return !!document.querySelector("input[name='English']");
 }
 
 // get element by its image source
 function getImgBySrc(src) {
-    return document.querySelector(`img[src='${src}']`)
+    return document.querySelector(`img[src='${src}']`);
 }
 
 // change main font to Bahnschrift
 function changeFont() {
-    let bodyElement = document.getElementsByTagName("body")
-        if (bodyElement) {
-        bodyElement = bodyElement[0]
+    let bodyElement = document.getElementsByTagName('body');
+    if (bodyElement) {
+        bodyElement = bodyElement[0];
 
         const styles = {
-            fontFamily: 'Bahnschrift, Helvetica, Sans Serif'
-        }
-        Object.assign(bodyElement.style, styles)
+            fontFamily: 'Bahnschrift, Helvetica, Sans Serif',
+        };
+        Object.assign(bodyElement.style, styles);
     }
 }
 
@@ -183,179 +183,220 @@ function menu() {
   display: block;
 }
 
-    `
-    const stylesheet = document.createElement("style")
-    stylesheet.innerText = Style
-    document.head.appendChild(stylesheet)
+    `;
+    const stylesheet = document.createElement('style');
+    stylesheet.innerText = Style;
+    document.head.appendChild(stylesheet);
 
     // constant to hold all menu elements with their links that exist
-    const menuElems = {}
+    const menuElems = {};
 
     // Elements of the black top header
 
     // get sammlung/stundenplan link
-    const sammlungImg = getImgBySrc("/img/anew/samm_inv.gif")
+    const sammlungImg = getImgBySrc('/img/anew/samm_inv.gif');
     if (sammlungImg) {
-        const sammlungLink = menuElems.sammlung = sammlungImg.parentElement.getAttribute("href")
+        const sammlungLink = (menuElems.sammlung =
+            sammlungImg.parentElement.getAttribute('href'));
         if (german()) {
-            menuElems.sammlung = [sammlungLink, "📅 Sammlung"]
+            menuElems.sammlung = [sammlungLink, '📅 Sammlung'];
         } else {
-            menuElems.sammlung = [sammlungLink, "📅 Collection"]
+            menuElems.sammlung = [sammlungLink, '📅 Collection'];
         }
     }
 
     // get Home link
     var xpath = "//b[text()='Home']";
-    const homeText = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    const homeText = document.evaluate(
+        xpath,
+        document,
+        null,
+        XPathResult.FIRST_ORDERED_NODE_TYPE,
+        null,
+    ).singleNodeValue;
     if (homeText) {
-        const HomeLink = homeText.parentElement.parentElement.getAttribute("href")
-        menuElems.home = [HomeLink, "🏠 Home"]
+        const HomeLink =
+            homeText.parentElement.parentElement.getAttribute('href');
+        menuElems.home = [HomeLink, '🏠 Home'];
     }
 
     // get Language link
-    const languageSelector = document.querySelector("input[name='English'], input[name='German']")
+    const languageSelector = document.querySelector(
+        "input[name='English'], input[name='German']",
+    );
     if (languageSelector) {
         // change the image
-        if (languageSelector.getAttribute("name") == "English") {
-            languageSelector.setAttribute("src", "https://upload.wikimedia.org/wikipedia/commons/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg")
+        if (languageSelector.getAttribute('name') == 'English') {
+            languageSelector.setAttribute(
+                'src',
+                'https://upload.wikimedia.org/wikipedia/commons/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg',
+            );
         } else {
-            languageSelector.setAttribute("src", "https://upload.wikimedia.org/wikipedia/commons/b/ba/Flag_of_Germany.svg")
+            languageSelector.setAttribute(
+                'src',
+                'https://upload.wikimedia.org/wikipedia/commons/b/ba/Flag_of_Germany.svg',
+            );
         }
         // get the hidden input as well
-        const languageHiddenInput = document.querySelector("input[type='hidden'][name='submitimg-English'], input[type='hidden'][name='submitimg-German']")
-        menuElems.language = [[languageSelector, languageHiddenInput], "🌐 Sprache"]
+        const languageHiddenInput = document.querySelector(
+            "input[type='hidden'][name='submitimg-English'], input[type='hidden'][name='submitimg-German']",
+        );
+        menuElems.language = [
+            [languageSelector, languageHiddenInput],
+            '🌐 Sprache',
+        ];
     }
 
     // Elements of the lower top header
 
     // get Search-element
-    const searchSelect = document.querySelector("select[name='search']")
+    const searchSelect = document.querySelector("select[name='search']");
     if (searchSelect) {
         if (german()) {
-            menuElems.search = [searchSelect.parentElement.parentElement, "🔎 Suche"]
+            menuElems.search = [
+                searchSelect.parentElement.parentElement,
+                '🔎 Suche',
+            ];
         } else {
-            menuElems.search = [searchSelect.parentElement.parentElement, "🔎 Search"]
+            menuElems.search = [
+                searchSelect.parentElement.parentElement,
+                '🔎 Search',
+            ];
         }
     }
 
     // get Semester-select-element
-    const semesterSelect = document.querySelector("select[name='semto']")
+    const semesterSelect = document.querySelector("select[name='semto']");
     if (semesterSelect) {
-        menuElems.semester = [semesterSelect.parentElement.parentElement, "🏫 Semester"]
+        menuElems.semester = [
+            semesterSelect.parentElement.parentElement,
+            '🏫 Semester',
+        ];
     }
 
     // Side elements (differ from page to page)
 
-    const sideMenuElem = document.querySelector("td[width='150'][valign='top'][height='100%'][bgcolor='#ffffff']")
-    const sideMenu = {}
+    const sideMenuElem = document.querySelector(
+        "td[width='150'][valign='top'][height='100%'][bgcolor='#ffffff']",
+    );
+    const sideMenu = {};
     if (sideMenuElem) {
-        var previous = "undefined"
+        var previous = 'undefined';
         // go through all tables that exist in this side menu - they contain the menu elements
         for (const sideMenuTable of sideMenuElem.children) {
-            const headingElem = sideMenuTable.querySelector("b")
-            const sideElemLinks = sideMenuTable.querySelectorAll("a")
+            const headingElem = sideMenuTable.querySelector('b');
+            const sideElemLinks = sideMenuTable.querySelectorAll('a');
             if (headingElem) {
-                const heading = headingElem.innerText
-                previous = heading
-                sideMenu[heading] = sideElemLinks
+                const heading = headingElem.innerText;
+                previous = heading;
+                sideMenu[heading] = sideElemLinks;
             } else {
                 // if the heading doesn't exist, then the table probably belongs under the previous table's heading
                 // if not, then they are under "Undefined"
                 if (Object.hasOwn(sideMenu, previous)) {
-                    sideMenu[previous].push.apply(sideMenu[previous], sideElemLinks)
+                    sideMenu[previous].push.apply(
+                        sideMenu[previous],
+                        sideElemLinks,
+                    );
                 } else {
-                    sideMenu[previous] = sideElemLinks
+                    sideMenu[previous] = sideElemLinks;
                 }
             }
         }
         // remove the side element and reposition the central element
-        const mainElem = sideMenuElem.nextElementSibling
-        sideMenuElem.innerHTML = ''
-        sideMenuElem.setAttribute("width", "10%")
-        mainElem.children[0].setAttribute("width", "90%")
+        const mainElem = sideMenuElem.nextElementSibling;
+        sideMenuElem.innerHTML = '';
+        sideMenuElem.setAttribute('width', '10%');
+        mainElem.children[0].setAttribute('width', '90%');
     }
 
     // create the new nav bar in all cases
-    const newMenu = document.createElement("nav")
-    newMenu.setAttribute("class", "navbar")
-    const navDiv = document.createElement("div")
-    navDiv.setAttribute("class", "nav-container")
-    const navPlaceholder = document.createElement("div")
-    navPlaceholder.setAttribute("class", "nav-placeholder")
-    newMenu.appendChild(navDiv)
+    const newMenu = document.createElement('nav');
+    newMenu.setAttribute('class', 'navbar');
+    const navDiv = document.createElement('div');
+    navDiv.setAttribute('class', 'nav-container');
+    const navPlaceholder = document.createElement('div');
+    navPlaceholder.setAttribute('class', 'nav-placeholder');
+    newMenu.appendChild(navDiv);
 
     // add the pride logo to the menu
-    const logo = document.createElement("img")
-    logo.setAttribute("class", "pride-logo")
-    logo.setAttribute("src", "https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/logo.svg")
-    logo.setAttribute("alt", "UnivIS")
+    const logo = document.createElement('img');
+    logo.setAttribute('class', 'pride-logo');
+    logo.setAttribute(
+        'src',
+        'https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/logo.svg',
+    );
+    logo.setAttribute('alt', 'UnivIS');
     if (german()) {
-        logo.setAttribute("title", "Informationssystem der Universität Kiel")
+        logo.setAttribute('title', 'Informationssystem der Universität Kiel');
     } else {
-        logo.setAttribute("title", "Information system of Kiel University")
+        logo.setAttribute('title', 'Information system of Kiel University');
     }
-    logo.setAttribute("width", "10%")
-    navDiv.appendChild(logo)
+    logo.setAttribute('width', '10%');
+    navDiv.appendChild(logo);
 
     // add all elements to the menu
 
     // add Home and Sammlung links, if they exist
-    for (const element of ["home", "sammlung"]) {
+    for (const element of ['home', 'sammlung']) {
         if (element in menuElems) {
-            const menuItem = document.createElement("a")
-            menuItem.setAttribute("href", menuElems[element][0])
-            menuItem.setAttribute("class", "nav-link")
-            menuItem.innerText = menuElems[element][1]
+            const menuItem = document.createElement('a');
+            menuItem.setAttribute('href', menuElems[element][0]);
+            menuItem.setAttribute('class', 'nav-link');
+            menuItem.innerText = menuElems[element][1];
 
-            navDiv.appendChild(menuItem)
+            navDiv.appendChild(menuItem);
         }
     }
 
     // add the search and semester options in new style
 
-    for (const element of ["search", "semester"]) {
+    for (const element of ['search', 'semester']) {
         if (element in menuElems) {
-            const dropdownElem = document.createElement("div")
-            dropdownElem.setAttribute("class", "dropdown")
+            const dropdownElem = document.createElement('div');
+            dropdownElem.setAttribute('class', 'dropdown');
 
-            const dropdownButton = document.createElement("div")
-            dropdownButton.setAttribute("class", "dropbtn")
-            dropdownButton.innerText = menuElems[element][1]
+            const dropdownButton = document.createElement('div');
+            dropdownButton.setAttribute('class', 'dropbtn');
+            dropdownButton.innerText = menuElems[element][1];
 
             // display current semester in semester dropdown
-            if (element == "semester") {
-                dropdownButton.innerText = `${dropdownButton.innerText}: ${semesterSelect.value}`
+            if (element == 'semester') {
+                dropdownButton.innerText = `${dropdownButton.innerText}: ${semesterSelect.value}`;
             }
 
-            const dropdownContent = document.createElement("div")
-            dropdownContent.setAttribute("class", "dropdown-content")
+            const dropdownContent = document.createElement('div');
+            dropdownContent.setAttribute('class', 'dropdown-content');
 
-            const old = menuElems[element][0]
-            const options = old.children[0].children[0].children
+            const old = menuElems[element][0];
+            const options = old.children[0].children[0].children;
 
             // add the options to the dropdown
             for (const option of options) {
-                const selectOption = document.createElement("div")
-                selectOption.innerText = option.innerText
-                selectOption.setAttribute("value",option.getAttribute("value"))
+                const selectOption = document.createElement('div');
+                selectOption.innerText = option.innerText;
+                selectOption.setAttribute(
+                    'value',
+                    option.getAttribute('value'),
+                );
 
                 // add corresponding event listeners
-                if (element == "search") {
-                    selectOption.addEventListener('click', search)
+                if (element == 'search') {
+                    selectOption.addEventListener('click', search);
                 } else {
-                    selectOption.addEventListener('click', semester)
+                    selectOption.addEventListener('click', semester);
                 }
-                dropdownContent.appendChild(selectOption)
+                dropdownContent.appendChild(selectOption);
             }
-            dropdownElem.appendChild(dropdownButton)
-            dropdownElem.appendChild(dropdownContent)
-            navDiv.appendChild(dropdownElem)
+            dropdownElem.appendChild(dropdownButton);
+            dropdownElem.appendChild(dropdownContent);
+            navDiv.appendChild(dropdownElem);
 
             // hide old options (css)
-            const hidden = document.createElement("div")
-            hidden.setAttribute("id", `old${element}`)
-            hidden.appendChild(old)
-            navDiv.appendChild(hidden)
+            const hidden = document.createElement('div');
+            hidden.setAttribute('id', `old${element}`);
+            hidden.appendChild(old);
+            navDiv.appendChild(hidden);
         }
     }
 
@@ -363,85 +404,90 @@ function menu() {
 
     for (const heading of Object.keys(sideMenu)) {
         // create a dropdown menu that has all the links under the current heading
-        const dropdownElem = document.createElement("div")
-        dropdownElem.setAttribute("class", "dropdown")
+        const dropdownElem = document.createElement('div');
+        dropdownElem.setAttribute('class', 'dropdown');
 
-        const dropdownButton = document.createElement("div")
-        dropdownButton.setAttribute("class", "dropbtn")
-        dropdownButton.innerText = heading
+        const dropdownButton = document.createElement('div');
+        dropdownButton.setAttribute('class', 'dropbtn');
+        dropdownButton.innerText = heading;
 
-        const dropdownContent = document.createElement("div")
-        dropdownContent.setAttribute("class", "dropdown-content")
+        const dropdownContent = document.createElement('div');
+        dropdownContent.setAttribute('class', 'dropdown-content');
 
         for (const link of sideMenu[heading]) {
-            dropdownContent.appendChild(link)
+            dropdownContent.appendChild(link);
         }
 
-        dropdownElem.appendChild(dropdownButton)
-        dropdownElem.appendChild(dropdownContent)
+        dropdownElem.appendChild(dropdownButton);
+        dropdownElem.appendChild(dropdownContent);
 
-        navDiv.appendChild(dropdownElem)
+        navDiv.appendChild(dropdownElem);
     }
 
     // add the language option
 
     if (menuElems.language) {
-        const div = document.createElement("div")
-        div.setAttribute("class", "nav-right")
-        div.setAttribute("id", "language")
+        const div = document.createElement('div');
+        div.setAttribute('class', 'nav-right');
+        div.setAttribute('id', 'language');
         for (const item of menuElems.language[0]) {
-            div.appendChild(item)
+            div.appendChild(item);
         }
-        navDiv.appendChild(div)
+        navDiv.appendChild(div);
     }
 
     // add light mode/dark mode option
-    const lightdiv = document.createElement("div")
-    lightdiv.setAttribute("class", "nav-right")
-    lightdiv.setAttribute("id", "mode")
-    const lightbutton = document.createElement("img")
-    lightbutton.setAttribute("src", "https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/darkmode.svg")
+    const lightdiv = document.createElement('div');
+    lightdiv.setAttribute('class', 'nav-right');
+    lightdiv.setAttribute('id', 'mode');
+    const lightbutton = document.createElement('img');
+    lightbutton.setAttribute(
+        'src',
+        'https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/darkmode.svg',
+    );
     if (DarkReader.isEnabled()) {
-        lightbutton.setAttribute("style", "filter:invert(93%)")
+        lightbutton.setAttribute('style', 'filter:invert(93%)');
     }
-    lightdiv.appendChild(lightbutton)
-    navDiv.appendChild(lightdiv)
-    lightdiv.addEventListener("click", toggleMode)
+    lightdiv.appendChild(lightbutton);
+    navDiv.appendChild(lightdiv);
+    lightdiv.addEventListener('click', toggleMode);
 
     // append the new menu to the top of the document
-    const mainForm = document.body.querySelector("form")
+    const mainForm = document.body.querySelector('form');
     if (mainForm) {
-        mainForm.prepend(navPlaceholder)
-        mainForm.prepend(newMenu)
+        mainForm.prepend(navPlaceholder);
+        mainForm.prepend(newMenu);
     }
 
     // delete the now unnecessary elements, if they exist
-    const mainTable = document.body.querySelector("table tbody")
+    const mainTable = document.body.querySelector('table tbody');
     if (mainTable) {
-        let tableHTML = mainTable.innerHTML
-        let end = tableHTML.indexOf("<!-- END of unihd -->")
-        let toDelete = tableHTML.substring(0, end)
-        tableHTML = tableHTML.replace(toDelete, '')
-        mainTable.innerHTML = tableHTML
+        let tableHTML = mainTable.innerHTML;
+        let end = tableHTML.indexOf('<!-- END of unihd -->');
+        let toDelete = tableHTML.substring(0, end);
+        tableHTML = tableHTML.replace(toDelete, '');
+        mainTable.innerHTML = tableHTML;
     }
 }
 
 // Display a counter how many modules are in this category (WP inf) (WIP)
 function countModules() {
     // todo: make this work if there is also titles between the modules
-    const moduleTableElement = document.querySelector("tbody tr[valign='top'][bgcolor='#eeeeee']")
-    if(moduleTableElement) {
-        const modules = moduleTableElement.parentElement.children
-        let count = 0
+    const moduleTableElement = document.querySelector(
+        "tbody tr[valign='top'][bgcolor='#eeeeee']",
+    );
+    if (moduleTableElement) {
+        const modules = moduleTableElement.parentElement.children;
+        let count = 0;
         for (const mod of modules) {
             // count everything except Exercises
             if (mod.innerText.match(/\sV;|\sS;|\sPRUE/)) {
-                count++
+                count++;
             }
         }
-        const heading = document.querySelector("h2")
+        const heading = document.querySelector('h2');
         if (heading) {
-            heading.innerText = `${heading.innerText} (${count} modules)`
+            heading.innerText = `${heading.innerText} (${count} modules)`;
         }
     }
 }
@@ -452,83 +498,83 @@ function countModules() {
 // todo: rewrite using "Assigned To"
 function groupByECTS() {
     // find the main table
-    const mainTable = document.querySelector("h2 ~ table")
+    const mainTable = document.querySelector('h2 ~ table');
     if (mainTable) {
-        const bgcolor = "#eeeeee"
-        const entries = mainTable.children[0].children
+        const bgcolor = '#eeeeee';
+        const entries = mainTable.children[0].children;
         const ectsAndModules = {};
 
         // make table a little prettier
-        mainTable.setAttribute("cellspacing", "0")
-        mainTable.setAttribute("cellpadding", "7")
+        mainTable.setAttribute('cellspacing', '0');
+        mainTable.setAttribute('cellpadding', '7');
 
         // go through each entry in the table, and add them to a dictionary corresponding to the nr. of ECTS
-        let ects = "undefined"
-        let previous = ects
+        let ects = 'undefined';
+        let previous = ects;
         for (const entry of entries) {
-            const small = entry.querySelector("h4 ~ small")
+            const small = entry.querySelector('h4 ~ small');
             if (small) {
-                const infotext = small.innerText
+                const infotext = small.innerText;
                 // these are the two types of ways I've seen ECTS indicated in the text
-                const i = infotext.indexOf("ECTS: ") // nr of ects after
+                const i = infotext.indexOf('ECTS: '); // nr of ects after
                 const j = Math.max(
-                    infotext.indexOf("ECTS;"),  // two different possible ECTS numbers before, I take the second
-                    infotext.indexOf("ETC;") ,  // same, but sometimes the S is not included for some reason
-                    infotext.indexOf("ECTS,")   // occasionally comma instead of semicolon
-                )
+                    infotext.indexOf('ECTS;'), // two different possible ECTS numbers before, I take the second
+                    infotext.indexOf('ETC;'), // same, but sometimes the S is not included for some reason
+                    infotext.indexOf('ECTS,'), // occasionally comma instead of semicolon
+                );
                 if (i > -1) {
-                    ects = infotext.substring(i + 6, i + 8)
-                    if (ects[1] == ";") {
-                        ects = ects[0]
+                    ects = infotext.substring(i + 6, i + 8);
+                    if (ects[1] == ';') {
+                        ects = ects[0];
                     }
                 } else if (j > -1) {
-                    ects = infotext.substring(j - 3, j - 1)
-                    ects = ects.trim()
-                // if it is an exercise, I rely on the fact that the previous entry was the corresponding VL.
-                // todo: sometimes this does not work, especially with other kinds of modules than VL/Ü (seminars, etc), or if a VL is labelled not as V; but as V/UE;
-                } else if (!infotext.match("V;")){
-                    ects = previous
+                    ects = infotext.substring(j - 3, j - 1);
+                    ects = ects.trim();
+                    // if it is an exercise, I rely on the fact that the previous entry was the corresponding VL.
+                    // todo: sometimes this does not work, especially with other kinds of modules than VL/Ü (seminars, etc), or if a VL is labelled not as V; but as V/UE;
+                } else if (!infotext.match('V;')) {
+                    ects = previous;
                 } else {
-                    ects = "undefined"
+                    ects = 'undefined';
                 }
             } else {
                 // the small exercises for Math modules land here
-                ects = previous
+                ects = previous;
             }
-            if(Object.hasOwn(ectsAndModules, ects)) {
-                ectsAndModules[ects].push(entry)
+            if (Object.hasOwn(ectsAndModules, ects)) {
+                ectsAndModules[ects].push(entry);
             } else {
-                ectsAndModules[ects] = [entry]
+                ectsAndModules[ects] = [entry];
             }
-            previous = ects
+            previous = ects;
         }
         // add them again, with headings <h3> which ECTS it is
-        let hasColor = false
-        let ectss = Object.keys(ectsAndModules)
-        ectss.sort()
+        let hasColor = false;
+        let ectss = Object.keys(ectsAndModules);
+        ectss.sort();
         for (ects of ectss) {
-            const headingrow = document.createElement("tr")
-            const headingcol = document.createElement("td")
-            const heading = document.createElement("h3")
-            headingrow.setAttribute("valign", "top")
-            headingcol.setAttribute("colspan", "4")
-            heading.innerText = ects + " ECTS"
-            headingrow.appendChild(headingcol)
-            headingcol.appendChild(heading)
-            mainTable.children[0].appendChild(headingrow)
+            const headingrow = document.createElement('tr');
+            const headingcol = document.createElement('td');
+            const heading = document.createElement('h3');
+            headingrow.setAttribute('valign', 'top');
+            headingcol.setAttribute('colspan', '4');
+            heading.innerText = ects + ' ECTS';
+            headingrow.appendChild(headingcol);
+            headingcol.appendChild(heading);
+            mainTable.children[0].appendChild(headingrow);
             for (const entry of ectsAndModules[ects]) {
-                const small = entry.querySelector("h4 ~ small")
+                const small = entry.querySelector('h4 ~ small');
                 if (small) {
-                    if (!small.innerText.match("UE")) {
-                        hasColor = !(hasColor && true)
+                    if (!small.innerText.match('UE')) {
+                        hasColor = !(hasColor && true);
                     }
                 }
                 if (hasColor) {
-                    entry.setAttribute("bgcolor", bgcolor)
+                    entry.setAttribute('bgcolor', bgcolor);
                 } else {
-                    entry.removeAttribute("bgcolor")
+                    entry.removeAttribute('bgcolor');
                 }
-                mainTable.children[0].appendChild(entry)
+                mainTable.children[0].appendChild(entry);
             }
         }
     }
@@ -537,88 +583,104 @@ function groupByECTS() {
 // removes the useless checkboxes and replaces the useful but ugly ones with pretty ones
 function replaceCheckboxes() {
     // remove the useless checkboxes
-    const uselessCheckboxes = document.querySelectorAll("input[type='checkbox']")
+    const uselessCheckboxes = document.querySelectorAll(
+        "input[type='checkbox']",
+    );
     if (uselessCheckboxes) {
         for (const checkbox of uselessCheckboxes) {
-            checkbox.remove()
+            checkbox.remove();
         }
     }
 
     // remove the useless "Auswahl hinzufügen" options
-    const optionNames = ["hinzufügen", "löschen", "einschränken", "anzeigen"]
-    const uselessOptions = optionNames.map(name => document.querySelectorAll(`input[name='${name}']`))
+    const optionNames = ['hinzufügen', 'löschen', 'einschränken', 'anzeigen'];
+    const uselessOptions = optionNames.map((name) =>
+        document.querySelectorAll(`input[name='${name}']`),
+    );
 
     for (const options of uselessOptions) {
         for (const option of options) {
-            option.remove()
+            option.remove();
         }
     }
 
     // replace the ugly checkbox images with better images
     // todo: it is not easily possible to replace the images with actual html checkboxes. Maybe find out how?
-    const checkboxNames = ["samm", "samm_yes"]
-    const uglyCheckboxes = checkboxNames.map(
-        name => [
-            name, document.querySelectorAll(`input[type='image'][src='/img/anew/${name}.gif']`)
-        ]
-    )
-    const darkStyle = "filter:invert(93%)"
+    const checkboxNames = ['samm', 'samm_yes'];
+    const uglyCheckboxes = checkboxNames.map((name) => [
+        name,
+        document.querySelectorAll(
+            `input[type='image'][src='/img/anew/${name}.gif']`,
+        ),
+    ]);
+    const darkStyle = 'filter:invert(93%)';
     for (const [checkboxName, checkboxes] of uglyCheckboxes) {
         for (const checkbox of checkboxes) {
-            checkbox.setAttribute("width", "30px")
-            checkbox.setAttribute("height", "30px")
+            checkbox.setAttribute('width', '30px');
+            checkbox.setAttribute('height', '30px');
             if (DarkReader.isEnabled()) {
-                checkbox.setAttribute("style", darkStyle)
+                checkbox.setAttribute('style', darkStyle);
             }
-            if (checkboxName == "samm") {
-                checkbox.setAttribute("src", "https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/checkbox-unchecked.svg")
+            if (checkboxName == 'samm') {
+                checkbox.setAttribute(
+                    'src',
+                    'https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/checkbox-unchecked.svg',
+                );
             } else {
-                checkbox.setAttribute("src", "https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/checkbox-checked.svg")
+                checkbox.setAttribute(
+                    'src',
+                    'https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/checkbox-checked.svg',
+                );
             }
         }
     }
 
     // replace the ugly checkboxes from the timetable view
     // todo: center checkboxes
-    const timetableCheckboxNames = ["checkb", "checkb_s"]
-    const timetableCheckboxes = timetableCheckboxNames.map(
-        name => [
-            name, document.querySelectorAll(`img[src='/img/anew/${name}.gif']`)
-        ]
-    )
+    const timetableCheckboxNames = ['checkb', 'checkb_s'];
+    const timetableCheckboxes = timetableCheckboxNames.map((name) => [
+        name,
+        document.querySelectorAll(`img[src='/img/anew/${name}.gif']`),
+    ]);
     for (const [checkboxName, checkboxes] of timetableCheckboxes) {
         for (const checkbox of checkboxes) {
-            checkbox.setAttribute("width", "20px")
-            checkbox.setAttribute("height", "20px")
-            checkbox.removeAttribute("align")
+            checkbox.setAttribute('width', '20px');
+            checkbox.setAttribute('height', '20px');
+            checkbox.removeAttribute('align');
             if (DarkReader.isEnabled()) {
-                checkbox.setAttribute("style", darkStyle)
+                checkbox.setAttribute('style', darkStyle);
             }
-            if (checkboxName == "checkb") {
-                checkbox.setAttribute("src", "https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/checkbox-unchecked.svg")
+            if (checkboxName == 'checkb') {
+                checkbox.setAttribute(
+                    'src',
+                    'https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/checkbox-unchecked.svg',
+                );
             } else {
-                checkbox.setAttribute("src", "https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/checkbox-checked.svg")
+                checkbox.setAttribute(
+                    'src',
+                    'https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/checkbox-checked.svg',
+                );
             }
         }
     }
 }
 
-// uses Dark Reader to enable dark mode on the site 
+// uses Dark Reader to enable dark mode on the site
 function toggleMode() {
     const currentTheme = document.body.className;
-    if (currentTheme == "dark") {
-        document.body.className = "light"
-        DarkReader.disable()
+    if (currentTheme == 'dark') {
+        document.body.className = 'light';
+        DarkReader.disable();
     } else {
-        document.body.className = "dark"
+        document.body.className = 'dark';
         DarkReader.enable({
             brightness: 100,
             contrast: 90,
-            sepia: 10
-        })
+            sepia: 10,
+        });
     }
-    localStorage.setItem("theme", document.body.className)
-    location.reload()
+    localStorage.setItem('theme', document.body.className);
+    location.reload();
 }
 // improves the list of links to look a little less overwhelming
 function prettierList() {
@@ -669,70 +731,72 @@ ul a:hover {
 ul a .alternate {
     background-color: #eeeeee;
 }
-    `
-    const stylesheet = document.createElement("style")
-    stylesheet.innerText = Style
+    `;
+    const stylesheet = document.createElement('style');
+    stylesheet.innerText = Style;
     // look for certain <input> tags that only exist on pages where we don't want the new style
-    const dont_style = ["pers", "lvs", "rooms"]
-    const check = dont_style.map(name => document.querySelector(`input[name='${name}']`)).reduce((acc, cur) => acc || cur)
+    const dont_style = ['pers', 'lvs', 'rooms'];
+    const check = dont_style
+        .map((name) => document.querySelector(`input[name='${name}']`))
+        .reduce((acc, cur) => acc || cur);
     if (!check) {
-        document.head.appendChild(stylesheet)
+        document.head.appendChild(stylesheet);
     }
 }
 
 function responsiveWebdesign() {
-    const meta = document.createElement("meta")
-    meta.setAttribute("name", "viewport")
-    meta.setAttribute("content", "width=device-width, initial-scale=1.0")
-    document.head.appendChild(meta)
+    const meta = document.createElement('meta');
+    meta.setAttribute('name', 'viewport');
+    meta.setAttribute('content', 'width=device-width, initial-scale=1.0');
+    document.head.appendChild(meta);
 }
 
 // runs all of the functions. caution: order important
 function runAllImprovements() {
-    const stylesheet = document.createElement("style")
-    stylesheet.innerText = mainStyle
-    document.head.appendChild(stylesheet)
-    responsiveWebdesign()
-    changeFont()
-    const theme = localStorage.getItem("theme") || "dark"
-    document.body.className = theme
-    if (theme == "dark") {
+    const stylesheet = document.createElement('style');
+    stylesheet.innerText = mainStyle;
+    document.head.appendChild(stylesheet);
+    responsiveWebdesign();
+    changeFont();
+    const theme = localStorage.getItem('theme') || 'dark';
+    document.body.className = theme;
+    if (theme == 'dark') {
         DarkReader.enable({
             brightness: 100,
             contrast: 90,
-            sepia: 10
-        })
+            sepia: 10,
+        });
     }
-    countModules()
-    replaceCheckboxes()
-    menu()
-    prettierList()
-    groupByECTS()
+    countModules();
+    replaceCheckboxes();
+    menu();
+    prettierList();
+    groupByECTS();
 }
 
 // functionality of the new search and semester dropdowns
 
 function search(event) {
-    const option = event.currentTarget
-    const searchSelect = document.querySelector("select[name='search']")
-    searchSelect.value = option.getAttribute("value")
-    const searchGo = document.querySelector("input[name='Search']")
-    searchGo.click()
+    const option = event.currentTarget;
+    const searchSelect = document.querySelector("select[name='search']");
+    searchSelect.value = option.getAttribute('value');
+    const searchGo = document.querySelector("input[name='Search']");
+    searchGo.click();
 }
 
 function semester(event) {
-    const option = event.currentTarget
-    const semesterSelect = document.querySelector("select[name='semto']")
-    semesterSelect.value = option.getAttribute("value")
-    const semesterGo = document.querySelector("input[name='Semester']")
-    semesterGo.click()
+    const option = event.currentTarget;
+    const semesterSelect = document.querySelector("select[name='semto']");
+    semesterSelect.value = option.getAttribute('value');
+    const semesterGo = document.querySelector("input[name='Semester']");
+    semesterGo.click();
 }
 
 // main part of the user script
-(function() {
+(function () {
     'use strict';
-    console.log("This is betterUnivIS, starting up")
-    window.addEventListener("load",runAllImprovements,false)
+    console.log('This is betterUnivIS, starting up');
+    window.addEventListener('load', runAllImprovements, false);
 })();
 
 // further ideas for the future:
