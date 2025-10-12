@@ -10,6 +10,8 @@
 // @run-at      document-body
 // ==/UserScript==
 
+/* global DarkReader */
+
 const mainStyle = `
 a {
     text-decoration: none;
@@ -42,6 +44,7 @@ function changeFont() {
 }
 
 // change the menu to be in a coherent style
+// todo: deal with menu overflow
 function menu() {
     // style for different menu elements
     const Style = `
@@ -248,7 +251,7 @@ function menu() {
     if (sideMenuElem) {
         var previous = "undefined"
         // go through all tables that exist in this side menu - they contain the menu elements
-        for (sideMenuTable of sideMenuElem.children) {
+        for (const sideMenuTable of sideMenuElem.children) {
             const headingElem = sideMenuTable.querySelector("b")
             const sideElemLinks = sideMenuTable.querySelectorAll("a")
             if (headingElem) {
@@ -297,9 +300,9 @@ function menu() {
     // add all elements to the menu
 
     // add Home and Sammlung links, if they exist
-    for (element of ["home", "sammlung"]) {
+    for (const element of ["home", "sammlung"]) {
         if (element in menuElems) {
-            menuItem = document.createElement("a")
+            const menuItem = document.createElement("a")
             menuItem.setAttribute("href", menuElems[element][0])
             menuItem.setAttribute("class", "nav-link")
             menuItem.innerText = menuElems[element][1]
@@ -310,7 +313,7 @@ function menu() {
 
     // add the search and semester options in new style
 
-    for (element of ["search", "semester"]) {
+    for (const element of ["search", "semester"]) {
         if (element in menuElems) {
             const dropdownElem = document.createElement("div")
             dropdownElem.setAttribute("class", "dropdown")
@@ -331,7 +334,7 @@ function menu() {
             const options = old.children[0].children[0].children
 
             // add the options to the dropdown
-            for (option of options) {
+            for (const option of options) {
                 const selectOption = document.createElement("div")
                 selectOption.innerText = option.innerText
                 selectOption.setAttribute("value",option.getAttribute("value"))
@@ -358,7 +361,7 @@ function menu() {
 
     // add the elements from the side menu
 
-    for (heading of Object.keys(sideMenu)) {
+    for (const heading of Object.keys(sideMenu)) {
         // create a dropdown menu that has all the links under the current heading
         const dropdownElem = document.createElement("div")
         dropdownElem.setAttribute("class", "dropdown")
@@ -370,7 +373,7 @@ function menu() {
         const dropdownContent = document.createElement("div")
         dropdownContent.setAttribute("class", "dropdown-content")
 
-        for (link of sideMenu[heading]) {
+        for (const link of sideMenu[heading]) {
             dropdownContent.appendChild(link)
         }
 
@@ -386,7 +389,7 @@ function menu() {
         const div = document.createElement("div")
         div.setAttribute("class", "nav-right")
         div.setAttribute("id", "language")
-        for (item of menuElems.language[0]) {
+        for (const item of menuElems.language[0]) {
             div.appendChild(item)
         }
         navDiv.appendChild(div)
@@ -415,7 +418,7 @@ function menu() {
     // delete the now unnecessary elements, if they exist
     const mainTable = document.body.querySelector("table tbody")
     if (mainTable) {
-        tableHTML = mainTable.innerHTML
+        let tableHTML = mainTable.innerHTML
         let end = tableHTML.indexOf("<!-- END of unihd -->")
         let toDelete = tableHTML.substring(0, end)
         tableHTML = tableHTML.replace(toDelete, '')
@@ -430,7 +433,7 @@ function countModules() {
     if(moduleTableElement) {
         const modules = moduleTableElement.parentElement.children
         let count = 0
-        for (mod of modules) {
+        for (const mod of modules) {
             // count everything except Exercises
             if (mod.innerText.match(/\sV;|\sS;|\sPRUE/)) {
                 count++
@@ -445,6 +448,8 @@ function countModules() {
 
 // group modules by their ECTS
 // todo: if you choose to "show all modules under this heading", this is still very janky
+// todo: sort
+// todo: rewrite using "Assigned To"
 function groupByECTS() {
     // find the main table
     const mainTable = document.querySelector("h2 ~ table")
@@ -460,7 +465,7 @@ function groupByECTS() {
         // go through each entry in the table, and add them to a dictionary corresponding to the nr. of ECTS
         let ects = "undefined"
         let previous = ects
-        for (entry of entries) {
+        for (const entry of entries) {
             const small = entry.querySelector("h4 ~ small")
             if (small) {
                 const infotext = small.innerText
@@ -511,7 +516,7 @@ function groupByECTS() {
             headingrow.appendChild(headingcol)
             headingcol.appendChild(heading)
             mainTable.children[0].appendChild(headingrow)
-            for (entry of ectsAndModules[ects]) {
+            for (const entry of ectsAndModules[ects]) {
                 const small = entry.querySelector("h4 ~ small")
                 if (small) {
                     if (!small.innerText.match("UE")) {
@@ -534,7 +539,7 @@ function replaceCheckboxes() {
     // remove the useless checkboxes
     const uselessCheckboxes = document.querySelectorAll("input[type='checkbox']")
     if (uselessCheckboxes) {
-        for (checkbox of uselessCheckboxes) {
+        for (const checkbox of uselessCheckboxes) {
             checkbox.remove()
         }
     }
@@ -543,8 +548,8 @@ function replaceCheckboxes() {
     const optionNames = ["hinzufügen", "löschen", "einschränken", "anzeigen"]
     const uselessOptions = optionNames.map(name => document.querySelectorAll(`input[name='${name}']`))
 
-    for (options of uselessOptions) {
-        for (option of options) {
+    for (const options of uselessOptions) {
+        for (const option of options) {
             option.remove()
         }
     }
@@ -558,8 +563,8 @@ function replaceCheckboxes() {
         ]
     )
     const darkStyle = "filter:invert(93%)"
-    for ([checkboxName, checkboxes] of uglyCheckboxes) {
-        for (checkbox of checkboxes) {
+    for (const [checkboxName, checkboxes] of uglyCheckboxes) {
+        for (const checkbox of checkboxes) {
             checkbox.setAttribute("width", "30px")
             checkbox.setAttribute("height", "30px")
             if (DarkReader.isEnabled()) {
@@ -581,8 +586,8 @@ function replaceCheckboxes() {
             name, document.querySelectorAll(`img[src='/img/anew/${name}.gif']`)
         ]
     )
-    for ([checkboxName, checkboxes] of timetableCheckboxes) {
-        for (checkbox of checkboxes) {
+    for (const [checkboxName, checkboxes] of timetableCheckboxes) {
+        for (const checkbox of checkboxes) {
             checkbox.setAttribute("width", "20px")
             checkbox.setAttribute("height", "20px")
             checkbox.removeAttribute("align")
@@ -676,7 +681,7 @@ ul a .alternate {
 }
 
 function responsiveWebdesign() {
-    meta = document.createElement("meta")
+    const meta = document.createElement("meta")
     meta.setAttribute("name", "viewport")
     meta.setAttribute("content", "width=device-width, initial-scale=1.0")
     document.head.appendChild(meta)
