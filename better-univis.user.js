@@ -22,7 +22,7 @@ a:hover {
 `;
 // returns true iff language is set to german
 function german() {
-    return !!document.querySelector("input[name='English']");
+    return !!document.querySelector(`input[name='English']`);
 }
 
 // get element by its image source
@@ -44,143 +44,142 @@ function changeFont() {
 }
 
 // change the menu to be in a coherent style
-// todo: deal with menu overflow
 function menu() {
     // style for different menu elements
     const Style = `
 .pride-logo {
-  max-height: 50px;
+    max-height: 50px;
 }
 
 .navbar {
-  position: fixed;
-  top: 0;
-  background-color: #eeeeee;
-  width: 100%;
-  height: 50px;
-  z-index: 999;
+    position: fixed;
+    top: 0;
+    background-color: #eeeeee;
+    width: 100%;
+    height: 50px;
+    z-index: 999;
 }
 
 .nav-container {
-  background-color: #eeeeee;
+    background-color: #eeeeee;
 }
 
 .nav-placeholder {
-  height: 50px;
+    height: 50px;
 }
 
 .nav-right {
-  float: right;
-  text-align: center;
+    float: right;
+    text-align: center;
 }
 
 .nav-right#mode {
-  height: 40px;
-  padding: 5px;
-  width: 5%;
-  display: flex;
-  justify-content: center;
+    height: 40px;
+    padding: 5px;
+    width: 5%;
+    display: flex;
+    justify-content: center;
 }
 
 .nav-right#mode:hover {
-  background-color: #dddddd;
-  cursor: pointer;
+    background-color: #dddddd;
+    cursor: pointer;
 }
 
 .nav-right#mode img {
-  height: 40px;
-  margin: auto;
+    height: 40px;
+    margin: auto;
 }
 
 
 .nav-right#language {
-  width: 5%;
-  padding-left: 0;
-  padding-right: 0;
-  display: flex;
-  justify-content:center;
+    width: 5%;
+    padding-left: 0;
+    padding-right: 0;
+    display: flex;
+    justify-content:center;
 }
 
 .nav-right#language input {
-  margin: auto;
-  padding: 15px;
-  height: 20px;
-  width: 33px;
+    margin: auto;
+    padding: 15px;
+    height: 20px;
+    width: 33px;
 }
 
 .nav-right#language:hover {
-  background-color: #dddddd;
+    background-color: #dddddd;
 }
 
 #oldsemester {
-  display: none;
+    display: none;
 }
 
 #oldsearch {
-  display: none;
+    display: none;
 }
 
 .navbar img {
-  float: left;
+    float: left;
 }
 
 .navbar a {
-  float: left;
-  font-size: 16px;
-  color: black;
-  text-align: center;
-  padding: 14px 16px;
-  text-decoration: none;
+    float: left;
+    font-size: 16px;
+    color: black;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
 }
 
 .dropdown {
-  float: left;
-  overflow: hidden;
+    float: left;
+    overflow: hidden;
 }
 
 .dropdown .dropbtn {
-  text-align: center;
-  font-size: 16px;
-  border: none;
-  outline: none;
-  color: black;
-  padding: 14px 16px;
-  background-color: inherit;
-  font-family: inherit;
-  margin: 0;
+    text-align: center;
+    font-size: 16px;
+    border: none;
+    outline: none;
+    color: black;
+    padding: 14px 16px;
+    background-color: inherit;
+    font-family: inherit;
+    margin: 0;
 }
 
 .navbar a:hover, .dropdown:hover .dropbtn {
-  background-color: #ddd;
+    background-color: #ddd;
 }
 
 .dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1;
-  max-height: 30vh;
-  overflow: scroll;
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    max-height: 30vh;
+    overflow: scroll;
 }
 
 .dropdown-content a, .dropdown-content div {
-  cursor: pointer;
-  float: none;
-  color: black;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
-  text-align: left;
+    cursor: pointer;
+    float: none;
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
 }
 
 .dropdown-content a:hover, .dropdown-content div:hover{
-  background-color: #ddd;
+    background-color: #ddd;
 }
 
 .dropdown:hover .dropdown-content {
-  display: block;
+    display: block;
 }
 
     `;
@@ -472,7 +471,6 @@ function menu() {
 
 // Display a counter how many modules are in this category (WP inf) (WIP)
 function countModules() {
-    // todo: make this work if there is also titles between the modules
     const moduleTableElement = document.querySelector(
         "tbody tr[valign='top'][bgcolor='#eeeeee']",
     );
@@ -493,9 +491,6 @@ function countModules() {
 }
 
 // group modules by their ECTS
-// todo: if you choose to "show all modules under this heading", this is still very janky
-// todo: sort
-// todo: rewrite using "Assigned To"
 function groupByECTS() {
     // find the main table
     const mainTable = document.querySelector('h2 ~ table');
@@ -531,7 +526,6 @@ function groupByECTS() {
                     ects = infotext.substring(j - 3, j - 1);
                     ects = ects.trim();
                     // if it is an exercise, I rely on the fact that the previous entry was the corresponding VL.
-                    // todo: sometimes this does not work, especially with other kinds of modules than VL/Ü (seminars, etc), or if a VL is labelled not as V; but as V/UE;
                 } else if (!infotext.match('V;')) {
                     ects = previous;
                 } else {
@@ -605,7 +599,6 @@ function replaceCheckboxes() {
     }
 
     // replace the ugly checkbox images with better images
-    // todo: it is not easily possible to replace the images with actual html checkboxes. Maybe find out how?
     const checkboxNames = ['samm', 'samm_yes'];
     const uglyCheckboxes = checkboxNames.map((name) => [
         name,
@@ -636,7 +629,6 @@ function replaceCheckboxes() {
     }
 
     // replace the ugly checkboxes from the timetable view
-    // todo: center checkboxes
     const timetableCheckboxNames = ['checkb', 'checkb_s'];
     const timetableCheckboxes = timetableCheckboxNames.map((name) => [
         name,
@@ -798,13 +790,3 @@ function semester(event) {
     console.log('This is betterUnivIS, starting up');
     window.addEventListener('load', runAllImprovements, false);
 })();
-
-// further ideas for the future:
-
-// todo: replace Ancient HTML tags that are not supported any more (such as <font>)
-// todo: optimize for mobile devices
-// todo: remove navigation links that lead nowhere / contain no sub-links or directories / modules
-// todo: sort by (options) with headers for each step
-// todo: Filter (ects > x or something, hide exercises, ...)
-// todo: show map next to room on details page or something
-// todo: prettyfy the basic infotext of the modules - align dates vertically and so on
