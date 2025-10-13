@@ -22,30 +22,46 @@ a:hover {
 `;
 
 const settings = {
-    mode: {
-        activate: toggleMode,
-        deactivate: toggleMode,
-    },
     countModules: {
-        active: false,
+        name: 'Count Modules',
+        active: localStorage.getItem('countModules') === 'true' || false,
         activate: () => {
             settings.countModules.active = true;
-            countModules;
+            localStorage.setItem('countModules', true);
+            countModules();
         },
         deactivate: () => {
             settings.countModules.active = false;
+            localStorage.setItem('countModules', false);
             location.reload();
+        },
+        listener: (event) => {
+            if (event.target.checked) {
+                settings.countModules.activate();
+            } else {
+                settings.countModules.deactivate();
+            }
         },
     },
     groupByECTS: {
-        active: false,
+        name: 'Group Modules by ECTS',
+        active: localStorage.getItem('groupByECTS') === 'true' || false,
         activate: () => {
             settings.groupByECTS.active = true;
-            groupByECTS;
+            localStorage.setItem('groupByECTS', true);
+            groupByECTS();
         },
         deactivate: () => {
             settings.groupByECTS.active = false;
+            localStorage.setItem('groupByECTS', false);
             location.reload();
+        },
+        listener: (event) => {
+            if (event.target.checked) {
+                settings.groupByECTS.activate();
+            } else {
+                settings.groupByECTS.deactivate();
+            }
         },
     },
 };
@@ -222,6 +238,8 @@ function menu() {
 .dropdown:hover .dropdown-content {
     display: block;
 }
+
+
 
 /* Style for the settings menu */
 
@@ -473,6 +491,7 @@ function menu() {
     settingsBtn.id = 'settingsBtn';
     const settingsImg = document.createElement('img');
     //! replace link when merging to main
+    //! group by ects: use the good-looking style for table entries also without it enabled!
     settingsImg.src =
         'https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/reduce-jank/assets/cogs.svg';
     if (DarkReader.isEnabled()) {
@@ -483,7 +502,20 @@ function menu() {
     // append to menu
     navDiv.append(settingsBtn);
 
-    // settings modal
+    // create settings modal
+    addCSS(`
+#settings_checkboxes label {
+    float: left;
+}
+#settingsList {
+    margin: 0;
+    list-style: none;
+    float: left;
+}
+#settings_checkboxes input {
+    margin-left: 10px;
+}
+    `);
 
     const modal = document.createElement('dialog');
     navDiv.append(modal);
@@ -491,7 +523,37 @@ function menu() {
         modal.showModal();
     });
     modal.id = 'settingsMenu';
-    modal.innerHTML = '<p>test</p>';
+    const settingsHeader = document.createElement('h3');
+    settingsHeader.innerText = 'Better UnivIS Settings';
+    const settingsText = document.createElement('p');
+    settingsText.innerText = 'press ESC to close';
+    modal.appendChild(settingsHeader);
+    modal.appendChild(settingsText);
+    const settingsDiv = document.createElement('div');
+    settingsDiv.id = 'settings_checkboxes';
+    const settingsLabel = document.createElement('label');
+    settingsLabel.innerText = 'Experimental Settings';
+    settingsDiv.appendChild(settingsLabel);
+    const settingsList = document.createElement('ul');
+    settingsList.id = 'settingsList';
+
+    // add the settings to the settings modal
+    for (const setting of Object.values(settings)) {
+        const countSetting = document.createElement('li');
+        const checkbox = document.createElement('input');
+        checkbox.addEventListener('change', setting.listener);
+        checkbox.type = 'checkbox';
+        if (setting.active) {
+            checkbox.setAttribute('checked', '');
+        } else {
+            checkbox.removeAttribute('checked');
+        }
+        countSetting.innerText = setting.name;
+        countSetting.appendChild(checkbox);
+        settingsList.appendChild(countSetting);
+    }
+    settingsDiv.append(settingsList);
+    modal.appendChild(settingsDiv);
 
     // add the language option
 
@@ -750,7 +812,7 @@ function toggleMode() {
 // improves the list of links to look a little less overwhelming
 function prettierList() {
     const Style = `
-ul {
+ul:not(#settingsList) {
     list-style-type: none;
     -moz-column-count: 4;
     -moz-column-gap: 20px;
@@ -760,40 +822,40 @@ ul {
     column-gap: 20px;
 }
 @media screen and (max-width: 1200px) {
-    ul {
+    ul:not(#settingsList) {
         column-count: 3;
         -webkit-column-count: 3;
         -moz-column-count: 3;
     }
 }
 @media screen and (max-width: 900px) {
-    ul {
+    ul:not(#settingsList) {
         column-count: 2;
         -webkit-column-count: 2;
         -moz-column-count: 2;
     }
 }
 @media screen and (max-width: 500px) {
-    ul {
+    ul:not(#settingsList) {
         column-count: 1;
         -webkit-column-count: 1;
         -moz-column-count: 1;
     }
 }
-ul li {
+ul:not(#settingsList) li {
     width: 100%;
 }
-ul a {
+ul:not(#settingsList) a {
     display: inline-block;
     text-decoration: none;
     padding:10px;
     width: 100%;
 }
-ul a:hover {
+ul:not(#settingsList) a:hover {
     background-color: #ddd;
     text-decoration: none;
 }
-ul a .alternate {
+ul:not(#settingsList) a .alternate {
     background-color: #eeeeee;
 }
     `;
@@ -830,11 +892,17 @@ function runAllImprovements() {
             sepia: 10,
         });
     }
-    countModules();
+    if (settings.countModules.active) {
+        console.log(settings.countModules.active);
+        console.log(localStorage.getItem('countModules'));
+        countModules();
+    }
     replaceCheckboxes();
     menu();
     prettierList();
-    groupByECTS();
+    if (settings.groupByECTS.active) {
+        groupByECTS();
+    }
 }
 
 // functionality of the new search and semester dropdowns
