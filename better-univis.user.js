@@ -20,6 +20,13 @@ a:hover {
     text-decoration: underline;
 }
 `;
+// adds the style to the document head
+function addCSS(css) {
+    const stylesheet = document.createElement('style');
+    stylesheet.innerText = css;
+    document.head.appendChild(stylesheet);
+}
+
 // returns true iff language is set to german
 function german() {
     return !!document.querySelector(`input[name='English']`);
@@ -46,7 +53,7 @@ function changeFont() {
 // change the menu to be in a coherent style
 function menu() {
     // style for different menu elements
-    const Style = `
+    addCSS(`
 .pride-logo {
     max-height: 50px;
 }
@@ -182,10 +189,7 @@ function menu() {
     display: block;
 }
 
-    `;
-    const stylesheet = document.createElement('style');
-    stylesheet.innerText = Style;
-    document.head.appendChild(stylesheet);
+    `);
 
     // constant to hold all menu elements with their links that exist
     const menuElems = {};
@@ -640,7 +644,10 @@ function replaceCheckboxes() {
             checkbox.setAttribute('height', '20px');
             checkbox.removeAttribute('align');
             if (DarkReader.isEnabled()) {
-                checkbox.setAttribute('style', darkStyle);
+                checkbox.setAttribute(
+                    'style',
+                    `${darkStyle}; vertical-align:middle`,
+                );
             }
             if (checkboxName == 'checkb') {
                 checkbox.setAttribute(
