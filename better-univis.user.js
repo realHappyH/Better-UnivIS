@@ -20,6 +20,36 @@ a:hover {
     text-decoration: underline;
 }
 `;
+
+const settings = {
+    mode: {
+        activate: toggleMode,
+        deactivate: toggleMode,
+    },
+    countModules: {
+        active: false,
+        activate: () => {
+            settings.countModules.active = true;
+            countModules;
+        },
+        deactivate: () => {
+            settings.countModules.active = false;
+            location.reload();
+        },
+    },
+    groupByECTS: {
+        active: false,
+        activate: () => {
+            settings.groupByECTS.active = true;
+            groupByECTS;
+        },
+        deactivate: () => {
+            settings.groupByECTS.active = false;
+            location.reload();
+        },
+    },
+};
+
 // adds the style to the document head
 function addCSS(css) {
     const stylesheet = document.createElement('style');
@@ -80,17 +110,17 @@ function menu() {
     text-align: center;
 }
 
+.nav-right:hover {
+    background-color: #dddddd;
+    cursor: pointer;
+}
+
 .nav-right#mode {
     height: 40px;
     padding: 5px;
-    width: 5%;
+    width: 3%;
     display: flex;
     justify-content: center;
-}
-
-.nav-right#mode:hover {
-    background-color: #dddddd;
-    cursor: pointer;
 }
 
 .nav-right#mode img {
@@ -98,9 +128,16 @@ function menu() {
     margin: auto;
 }
 
+.nav-right#settingsBtn {
+    height: 40px;
+    padding: 5px;
+    width: 3%;
+    display: flex;
+    justify-content: center;
+}
 
 .nav-right#language {
-    width: 5%;
+    width: 3%;
     padding-left: 0;
     padding-right: 0;
     display: flex;
@@ -114,10 +151,6 @@ function menu() {
     width: 33px;
 }
 
-.nav-right#language:hover {
-    background-color: #dddddd;
-}
-
 #oldsemester {
     display: none;
 }
@@ -128,6 +161,7 @@ function menu() {
 
 .navbar img {
     float: left;
+    height: 40px;
 }
 
 .navbar a {
@@ -181,13 +215,15 @@ function menu() {
     text-align: left;
 }
 
-.dropdown-content a:hover, .dropdown-content div:hover{
+.dropdown-content a:hover, .dropdown-content div:hover {
     background-color: #ddd;
 }
 
 .dropdown:hover .dropdown-content {
     display: block;
 }
+
+/* Style for the settings menu */
 
     `);
 
@@ -322,7 +358,7 @@ function menu() {
     navPlaceholder.setAttribute('class', 'nav-placeholder');
     newMenu.appendChild(navDiv);
 
-    // add the pride logo to the menu
+    // add the pride logo to the navbar
     const logo = document.createElement('img');
     logo.setAttribute('class', 'pride-logo');
     logo.setAttribute(
@@ -426,6 +462,36 @@ function menu() {
 
         navDiv.appendChild(dropdownElem);
     }
+
+    // Elements on the right side of the navbar
+
+    // add a settings menu
+
+    // button for opening the settings menu
+    const settingsBtn = document.createElement('div');
+    settingsBtn.setAttribute('class', 'btn nav-right');
+    settingsBtn.id = 'settingsBtn';
+    const settingsImg = document.createElement('img');
+    //! replace link when merging to main
+    settingsImg.src =
+        'https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/reduce-jank/assets/cogs.svg';
+    if (DarkReader.isEnabled()) {
+        settingsImg.setAttribute('style', 'filter:invert(93%)');
+    }
+    settingsBtn.appendChild(settingsImg);
+
+    // append to menu
+    navDiv.append(settingsBtn);
+
+    // settings modal
+
+    const modal = document.createElement('dialog');
+    navDiv.append(modal);
+    settingsBtn.addEventListener('click', () => {
+        modal.showModal();
+    });
+    modal.id = 'settingsMenu';
+    modal.innerHTML = '<p>test</p>';
 
     // add the language option
 
@@ -752,9 +818,7 @@ function responsiveWebdesign() {
 
 // runs all of the functions. caution: order important
 function runAllImprovements() {
-    const stylesheet = document.createElement('style');
-    stylesheet.innerText = mainStyle;
-    document.head.appendChild(stylesheet);
+    addCSS(mainStyle);
     responsiveWebdesign();
     changeFont();
     const theme = localStorage.getItem('theme') || 'dark';
