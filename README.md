@@ -6,7 +6,7 @@ Mit Vorsicht genießen. Noch sehr buggy und nur für die Seiten der Informatik u
 ## Installation
 
 1. Installiert im Browser eurer Wahl einen Userscript-Manager wie [Violentmonkey](https://violentmonkey.github.io/)
-2. Die Rohdatei von `better-univis.user.js` auf GitHub aufrufen ([Link](https://github.com/realHappyH/Better-UnivIS/raw/refs/heads/main/better-univis.user.js)). Bei Violentmonkey sollte dann das Skript installiert werden.
+2. Im [aktuellen release](https://github.com/realHappyH/Better-UnivIS/releases/tag/v1.0.0) die Datei `better-univis.user.js` aufrufen. Bei Violentmonkey sollte dann das Skript installiert werden.
 3. UnivIS neu laden
 
 ## Aktualisieren
