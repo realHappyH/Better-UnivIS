@@ -3,7 +3,7 @@
 // @namespace   Violentmonkey Scripts
 // @match       *://univis.uni-kiel.de/*
 // @grant       none
-// @version     1.0
+// @version     1.0.0
 // @author      HappyH
 // @description Verbessert UnivIS
 // @require     https://unpkg.com/darkreader@4.9.105/darkreader.js#sha512=2b7f8f0cb074b0f1ca650f8feb81e345232a9f973257481dc0f56e8fcabb44f052e591f9039b684490c4e650bb71024f365fa085539a4213ad21bd7f15d28e93
@@ -367,6 +367,7 @@ function menu() {
     const sideMenu = {};
     if (sideMenuElem) {
         var previous = 'undefined';
+
         // go through all tables that exist in this side menu - they contain the menu elements
         for (const sideMenuTable of sideMenuElem.children) {
             const headingElem = sideMenuTable.querySelector('b');
@@ -388,6 +389,7 @@ function menu() {
                 }
             }
         }
+
         // remove the side element and reposition the central element
         const mainElem = sideMenuElem.nextElementSibling;
         sideMenuElem.innerHTML = '';
@@ -691,7 +693,8 @@ function groupByECTS() {
             const small = entry.querySelector('h4 ~ small');
             if (small) {
                 const infotext = small.innerText;
-                // these are the two types of ways I've seen ECTS indicated in the text
+
+                // these are the two types of ways I've seen ECTS indicated in the text:
                 const i = infotext.indexOf('ECTS: '); // nr of ects after
                 const j = Math.max(
                     infotext.indexOf('ECTS;'), // two different possible ECTS numbers before, I take the second
@@ -706,6 +709,7 @@ function groupByECTS() {
                 } else if (j > -1) {
                     ects = infotext.substring(j - 3, j - 1);
                     ects = ects.trim();
+
                     // if it is an exercise, I rely on the fact that the previous entry was the corresponding VL.
                 } else if (!infotext.match('V;')) {
                     ects = previous;
@@ -713,7 +717,7 @@ function groupByECTS() {
                     ects = 'undefined';
                 }
             } else {
-                // the small exercises for Math modules land here
+                // the small exercise options for different dates for Math modules land here
                 ects = previous;
             }
             if (Object.hasOwn(ectsAndModules, ects)) {
@@ -723,6 +727,7 @@ function groupByECTS() {
             }
             previous = ects;
         }
+
         // add them again, with headings <h3> which ECTS it is
         let hasColor = false;
         let ectss = Object.keys(ectsAndModules);
@@ -858,6 +863,7 @@ function toggleMode() {
     localStorage.setItem('theme', document.body.className);
     location.reload();
 }
+
 // improves the list of links to look a little less overwhelming
 function prettierList() {
     const Style = `
@@ -910,6 +916,7 @@ ul:not(#settingsList) a .alternate {
     `;
     const stylesheet = document.createElement('style');
     stylesheet.innerText = Style;
+
     // look for certain <input> tags that only exist on pages where we don't want the new style
     const dont_style = ['pers', 'lvs', 'rooms'];
     const check = dont_style
