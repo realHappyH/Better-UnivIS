@@ -24,7 +24,7 @@ a:hover {
 const settings = {
     countModules: {
         name: 'Count Modules',
-        active: localStorage.getItem('countModules') === 'true' || false,
+        active: localStorage.getItem('countModules') === 'true',
         activate: () => {
             settings.countModules.active = true;
             localStorage.setItem('countModules', true);
@@ -45,7 +45,7 @@ const settings = {
     },
     groupByECTS: {
         name: 'Group Modules by ECTS',
-        active: localStorage.getItem('groupByECTS') === 'true' || false,
+        active: localStorage.getItem('groupByECTS') === 'true',
         activate: () => {
             settings.groupByECTS.active = true;
             localStorage.setItem('groupByECTS', true);
@@ -93,6 +93,15 @@ function changeFont() {
             fontFamily: 'Bahnschrift, Helvetica, Sans Serif',
         };
         Object.assign(bodyElement.style, styles);
+    }
+}
+
+// make main table prettier
+function prettyTable() {
+    const mainTable = document.querySelector('h2 ~ table');
+    if (mainTable) {
+        mainTable.setAttribute('cellspacing', '0');
+        mainTable.setAttribute('cellpadding', '7');
     }
 }
 
@@ -238,11 +247,6 @@ function menu() {
 .dropdown:hover .dropdown-content {
     display: block;
 }
-
-
-
-/* Style for the settings menu */
-
     `);
 
     // constant to hold all menu elements with their links that exist
@@ -491,7 +495,7 @@ function menu() {
     settingsBtn.id = 'settingsBtn';
     const settingsImg = document.createElement('img');
     //! replace link when merging to main
-    //! group by ects: use the good-looking style for table entries also without it enabled!
+    //! settings menu: add tip when a new release for better-univis is available
     settingsImg.src =
         'https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/reduce-jank/assets/cogs.svg';
     if (DarkReader.isEnabled()) {
@@ -519,6 +523,8 @@ function menu() {
 
     const modal = document.createElement('dialog');
     navDiv.append(modal);
+
+    // open the settings modal when the settings button is clicked
     settingsBtn.addEventListener('click', () => {
         modal.showModal();
     });
@@ -630,10 +636,6 @@ function groupByECTS() {
         const bgcolor = '#eeeeee';
         const entries = mainTable.children[0].children;
         const ectsAndModules = {};
-
-        // make table a little prettier
-        mainTable.setAttribute('cellspacing', '0');
-        mainTable.setAttribute('cellpadding', '7');
 
         // go through each entry in the table, and add them to a dictionary corresponding to the nr. of ECTS
         let ects = 'undefined';
@@ -893,13 +895,12 @@ function runAllImprovements() {
         });
     }
     if (settings.countModules.active) {
-        console.log(settings.countModules.active);
-        console.log(localStorage.getItem('countModules'));
         countModules();
     }
     replaceCheckboxes();
     menu();
     prettierList();
+    prettyTable();
     if (settings.groupByECTS.active) {
         groupByECTS();
     }
