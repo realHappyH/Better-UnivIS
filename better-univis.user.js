@@ -66,14 +66,14 @@ const settings = {
     },
 };
 
-// adds the style to the document head
+// adds the given style to the document head
 function addCSS(css) {
     const stylesheet = document.createElement('style');
     stylesheet.innerText = css;
     document.head.appendChild(stylesheet);
 }
 
-// returns true iff language is set to german
+// returns true iff the language is set to german
 function german() {
     return !!document.querySelector(`input[name='English']`);
 }
@@ -543,7 +543,6 @@ function menu() {
     settingsBtn.setAttribute('class', 'btn nav-right');
     settingsBtn.id = 'settingsBtn';
     const settingsImg = document.createElement('img');
-    //! settings menu: add tip when a new release for better-univis is available
     settingsImg.src =
         'https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/cogs.svg';
     if (DarkReader.isEnabled()) {
@@ -926,6 +925,7 @@ ul:not(#settingsList) a .alternate {
     }
 }
 
+// adds a meta tag such that the website looks better on mobile devices
 function responsiveWebdesign() {
     const meta = document.createElement('meta');
     meta.setAttribute('name', 'viewport');
@@ -959,7 +959,7 @@ function runAllImprovements() {
     }
 }
 
-// functionality of the new search and semester dropdowns
+// functionality of the new search and semester dropdown menus
 
 function search(event) {
     const option = event.currentTarget;
