@@ -140,7 +140,7 @@ function menu() {
     cursor: pointer;
 }
 
-.nav-right#mode {
+.nav-right#mode, .nav-right#settingsBtn {
     height: 40px;
     padding: 5px;
     width: 3%;
@@ -151,14 +151,6 @@ function menu() {
 .nav-right#mode img {
     height: 40px;
     margin: auto;
-}
-
-.nav-right#settingsBtn {
-    height: 40px;
-    padding: 5px;
-    width: 3%;
-    display: flex;
-    justify-content: center;
 }
 
 .nav-right#language {
@@ -246,6 +238,38 @@ function menu() {
 
 .dropdown:hover .dropdown-content {
     display: block;
+}
+
+/* responsive menu for small screens */
+
+.navbar .icon {
+    display: none;
+}
+
+@media screen and (max-width: 1200px) {
+    .navbar .nav-link, .navbar .dropdown, .navbar .nav-right#mode, .navbar .nav-right#settingsBtn, .navbar .nav-right#language {
+        display: none;
+    }
+    .navbar a.icon {
+        float: right;
+        display: block;
+        padding: 5px;
+    }
+    .navbar.responsive {
+        position: relative;
+    }
+    .navbar.responsive a.icon {
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+    .navbar.responsive .nav-link, .navbar.responsive .dropdown, .navbar.responsive .nav-right#mode, .navbar.responsive .nav-right#settingsBtn, .navbar.responsive .nav-right#language, navbar.responsive .pride-logo, .navbar.responsive img {
+        float: none;
+        display: block;
+        text-align: center;
+        width: auto;
+        margin: auto;
+    }
 }
     `);
 
@@ -484,6 +508,29 @@ function menu() {
 
         navDiv.appendChild(dropdownElem);
     }
+
+    // add expansion button for small screens
+
+    function expandMenu() {
+        if (newMenu.className === 'navbar') {
+            newMenu.className += ' responsive';
+        } else {
+            newMenu.className = 'navbar';
+        }
+    }
+
+    const hamburgerLink = document.createElement('a');
+    hamburgerLink.href = 'javascript:void(0)';
+    hamburgerLink.className = 'icon';
+    hamburgerLink.addEventListener('click', expandMenu);
+    const hamburgerIcon = document.createElement('img');
+    hamburgerIcon.src =
+        'https://upload.wikimedia.org/wikipedia/commons/b/b2/Hamburger_icon.svg';
+    if (DarkReader.isEnabled()) {
+        hamburgerIcon.style = 'filter:invert(93%)';
+    }
+    hamburgerLink.appendChild(hamburgerIcon);
+    navDiv.appendChild(hamburgerLink);
 
     // Elements on the right side of the navbar
 
