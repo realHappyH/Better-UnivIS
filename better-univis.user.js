@@ -543,10 +543,9 @@ function menu() {
     settingsBtn.setAttribute('class', 'btn nav-right');
     settingsBtn.id = 'settingsBtn';
     const settingsImg = document.createElement('img');
-    //! replace link when merging to main
     //! settings menu: add tip when a new release for better-univis is available
     settingsImg.src =
-        'https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/reduce-jank/assets/cogs.svg';
+        'https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/cogs.svg';
     if (DarkReader.isEnabled()) {
         settingsImg.setAttribute('style', 'filter:invert(93%)');
     }
