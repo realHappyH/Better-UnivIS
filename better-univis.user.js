@@ -566,6 +566,17 @@ function menu() {
 #settings_checkboxes input {
     margin-left: 10px;
 }
+.close-button {
+    float: right;
+    padding: 5px;
+    padding-left: 9px;
+    padding-right: 9px;
+    border-radius: 8px;
+}
+.close-button:hover {
+    background-color: #dddddd;
+    cursor: pointer;
+}
     `);
 
     const modal = document.createElement('dialog');
@@ -576,12 +587,16 @@ function menu() {
         modal.showModal();
     });
     modal.id = 'settingsMenu';
+    const closeButton = document.createElement('div');
+    closeButton.innerText = '✖';
+    closeButton.className = 'close-button';
+    closeButton.addEventListener('click', () => {
+        modal.close();
+    });
     const settingsHeader = document.createElement('h3');
     settingsHeader.innerText = 'Better UnivIS Settings';
-    const settingsText = document.createElement('p');
-    settingsText.innerText = 'press ESC to close';
+    modal.appendChild(closeButton);
     modal.appendChild(settingsHeader);
-    modal.appendChild(settingsText);
     const settingsDiv = document.createElement('div');
     settingsDiv.id = 'settings_checkboxes';
     const settingsLabel = document.createElement('label');
