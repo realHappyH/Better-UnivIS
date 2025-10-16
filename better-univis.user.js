@@ -98,7 +98,10 @@ function changeFont() {
 
 // make main table prettier
 function prettyTable() {
-    const mainTable = document.querySelector('h2 ~ table');
+    const tableEntry = document.querySelector(
+        'input[src="https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/checkbox-checked.svg"], input[src="https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/checkbox-unchecked.svg"]',
+    );
+    const mainTable = tableEntry.closest('table');
     if (mainTable) {
         mainTable.setAttribute('cellspacing', '0');
         mainTable.setAttribute('cellpadding', '7');
