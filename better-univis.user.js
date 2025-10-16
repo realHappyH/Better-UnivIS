@@ -106,6 +106,7 @@ function prettyTable() {
         mainTable.setAttribute('cellspacing', '0');
         mainTable.setAttribute('cellpadding', '7');
     }
+    //todo for small screens: title and description over entire width, number below checkbox, big univis logo
 }
 
 // change the menu to be in a coherent style
@@ -114,6 +115,7 @@ function menu() {
     addCSS(`
 .pride-logo {
     max-height: 50px;
+    width: 10%;
 }
 
 .navbar {
@@ -250,6 +252,9 @@ function menu() {
 }
 
 @media screen and (max-width: 1200px) {
+    .pride-logo {
+        width: auto;
+    }
     .navbar .nav-link, .navbar .dropdown, .navbar .nav-right#mode, .navbar .nav-right#settingsBtn, .navbar .nav-right#language {
         display: none;
     }
@@ -422,7 +427,6 @@ function menu() {
     } else {
         logo.setAttribute('title', 'Information system of Kiel University');
     }
-    logo.setAttribute('width', '10%');
     navDiv.appendChild(logo);
 
     // add all elements to the menu
