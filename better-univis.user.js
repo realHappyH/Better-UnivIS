@@ -19,6 +19,9 @@ a {
 a:hover {
     text-decoration: underline;
 }
+body {
+    margin: 0;
+}
 `;
 
 const settings = {
