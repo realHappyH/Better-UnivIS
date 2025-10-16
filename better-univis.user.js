@@ -69,6 +69,8 @@ const settings = {
     },
 };
 
+// helper functions
+
 // adds the given style to the document head
 function addCSS(css) {
     const stylesheet = document.createElement('style');
@@ -81,10 +83,17 @@ function german() {
     return !!document.querySelector(`input[name='English']`);
 }
 
+// check if html element is empty
+function isEmpty(element) {
+    return !element.textContent.trim() && element.childElementCount == 0;
+}
+
 // get element by its image source
 function getImgBySrc(src) {
     return document.querySelector(`img[src='${src}']`);
 }
+
+// functions that implement features
 
 // change main font to Bahnschrift
 function changeFont() {
@@ -101,13 +110,66 @@ function changeFont() {
 
 // make main table prettier
 function prettyTable() {
+    // there is a table of modules iff there is a checked or unchecked checkbox element somewhere
     const tableEntry = document.querySelector(
         'input[src="https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/checkbox-checked.svg"], input[src="https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/checkbox-unchecked.svg"]',
     );
-    const mainTable = tableEntry.closest('table');
-    if (mainTable) {
+    if (tableEntry) {
+        // locate table of modules and change its style
+        const mainTable = tableEntry.closest('table');
         mainTable.setAttribute('cellspacing', '0');
         mainTable.setAttribute('cellpadding', '7');
+
+        // make different table version for small screens
+        let small = false;
+        const replacements = {};
+        const entries = mainTable.children[0].children;
+        // copy the old elements to be able to switch between the elements for small and big screens
+        for (let i = 0; i < entries.length; i++) {
+            const largeEntry = entries[i].cloneNode(true);
+            const smallEntry = entries[i].cloneNode(true);
+
+            for (const child of smallEntry.children) {
+                if (isEmpty(child)) {
+                    child.remove();
+                }
+            }
+
+            const sNumberData = smallEntry.children[1];
+            const sContent = smallEntry.children[2];
+            if (sContent) {
+                const number = sNumberData.innerText;
+                const heading = sContent.querySelector('h4');
+                if (heading && number.length > 3) {
+                    heading.innerHTML =
+                        heading.innerHTML += ` (${number.trim()})`;
+                    sNumberData.remove();
+                }
+            }
+            replacements[i] = { large: largeEntry, small: smallEntry };
+        }
+        // change tables for small screens
+        window.addEventListener('resize', () => {
+            // small window size
+            if (window.innerWidth < 600) {
+                // was previously not small
+                if (small == false) {
+                    mainTable.setAttribute('cellpadding', '1');
+                    small = true;
+                    for (let i = 0; i < entries.length; i++) {
+                        entries[i].replaceWith(replacements[i].small);
+                    }
+                }
+            } else {
+                if (small == true) {
+                    mainTable.setAttribute('cellpadding', '7');
+                    small = false;
+                    for (let i = 0; i < entries.length; i++) {
+                        entries[i].replaceWith(replacements[i].large);
+                    }
+                }
+            }
+        });
     }
     //todo for small screens: title and description over entire width, number below checkbox, big univis logo
 }
