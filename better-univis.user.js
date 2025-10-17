@@ -191,7 +191,6 @@ function prettyTable() {
             }
         });
     }
-    //todo for small screens: title and description over entire width, number below checkbox, big univis logo
 }
 
 // make main page look better on mobile
