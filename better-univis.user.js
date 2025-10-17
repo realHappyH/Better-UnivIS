@@ -19,6 +19,9 @@ a {
 a:hover {
     text-decoration: underline;
 }
+body {
+    margin: 0;
+}
 `;
 
 const settings = {
@@ -66,6 +69,8 @@ const settings = {
     },
 };
 
+// helper functions
+
 // adds the given style to the document head
 function addCSS(css) {
     const stylesheet = document.createElement('style');
@@ -78,10 +83,17 @@ function german() {
     return !!document.querySelector(`input[name='English']`);
 }
 
+// check if html element is empty
+function isEmpty(element) {
+    return !element.textContent.trim() && element.childElementCount == 0;
+}
+
 // get element by its image source
 function getImgBySrc(src) {
     return document.querySelector(`img[src='${src}']`);
 }
+
+// functions that implement features
 
 // change main font to Bahnschrift
 function changeFont() {
@@ -98,13 +110,188 @@ function changeFont() {
 
 // make main table prettier
 function prettyTable() {
+    // there is a table of modules iff there is a checked or unchecked checkbox element somewhere
     const tableEntry = document.querySelector(
         'input[src="https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/checkbox-checked.svg"], input[src="https://raw.githubusercontent.com/realHappyH/Better-UnivIS/refs/heads/main/assets/checkbox-unchecked.svg"]',
     );
-    const mainTable = tableEntry.closest('table');
-    if (mainTable) {
+    if (tableEntry) {
+        // locate table of modules and change its style
+        const mainTable = tableEntry.closest('table');
         mainTable.setAttribute('cellspacing', '0');
         mainTable.setAttribute('cellpadding', '7');
+
+        // make different table version for small screens
+        let small = false;
+        const replacements = {};
+        const entries = mainTable.children[0].children;
+        // copy the old elements to be able to switch between the elements for small and big screens
+        for (let i = 0; i < entries.length; i++) {
+            const largeEntry = entries[i].cloneNode(true);
+            const smallEntry = entries[i].cloneNode(true);
+
+            // remove all empty tags to save space
+            for (const child of smallEntry.children) {
+                if (isEmpty(child)) {
+                    child.remove();
+                }
+            }
+
+            const sNumberData = smallEntry.children[1];
+            const sContent = smallEntry.children[2];
+            const sLecturers =
+                smallEntry.children[smallEntry.children.length - 1];
+            const lecturerText = document.createElement('small');
+            if (sContent) {
+                const number = sNumberData.innerText;
+                const heading = sContent.querySelector('h4');
+                if (heading && number.length > 3) {
+                    heading.innerHTML =
+                        heading.innerHTML += ` (${number.trim()})`;
+                    sNumberData.remove();
+                }
+                if (sLecturers) {
+                    sLecturers.remove();
+                    const lecturerLinks = sLecturers.querySelectorAll('a');
+
+                    for (let i = 0; i < lecturerLinks.length; i++) {
+                        const link = lecturerLinks[i];
+                        lecturerText.appendChild(link);
+                        if (i < lecturerLinks.length - 1) {
+                            lecturerText.innerHTML += ', ';
+                        }
+                    }
+                    sContent.prepend(lecturerText);
+                }
+            }
+            replacements[i] = {
+                large: largeEntry,
+                small: smallEntry,
+            };
+        }
+        // change tables for small screens
+        window.addEventListener('resize', () => {
+            // small window size
+            if (window.innerWidth < 600) {
+                // was previously not small
+                if (small == false) {
+                    mainTable.setAttribute('cellpadding', '1');
+                    small = true;
+                    for (let i = 0; i < entries.length; i++) {
+                        entries[i].replaceWith(replacements[i].small);
+                    }
+                }
+            } else {
+                if (small == true) {
+                    mainTable.setAttribute('cellpadding', '7');
+                    small = false;
+                    for (let i = 0; i < entries.length; i++) {
+                        entries[i].replaceWith(replacements[i].large);
+                    }
+                }
+            }
+        });
+    }
+    //todo for small screens: title and description over entire width, number below checkbox, big univis logo
+}
+
+// make main page look better on mobile
+function prettyMainPage() {
+    addCSS(`
+.collapsible {
+  background-color: #eee;
+  color: #444;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+.active, .collapsible:hover {
+  background-color: #dddddd;
+}
+
+.collapsible-content {
+  padding: 18px;
+  display: none;
+  overflow: hidden;
+  background-color: #fefefe;
+}
+
+.collapsible:after {
+  content: '+';
+  font-size: 13px;
+  color: black;
+  float: right;
+  margin-left: 5px;
+}
+
+.active:after {
+  content: "-";
+}
+
+div.main-page {
+    padding: 10px;
+
+}
+    `);
+    // we are on the main page iff we find the heading "Education" or "Lehre"
+    const xpath = "//b[text()='Lehre'] | //b[text()='Education']";
+    const mainPageElem = document.evaluate(
+        xpath,
+        document,
+        null,
+        XPathResult.FIRST_ORDERED_NODE_TYPE,
+        null,
+    ).singleNodeValue;
+    // get the elements from the main page to be able to work with them
+    if (mainPageElem) {
+        const mainLayout = mainPageElem
+            .closest('table')
+            .parentElement.closest('table').parentElement.parentElement;
+        const tableWrapper = mainLayout.children;
+        const tables = Array.from(tableWrapper[0].children)
+            .concat(Array.from(tableWrapper[1].children))
+            .filter((elem) => elem.innerText.trim())
+            .map((elem) => elem.querySelector('table').children[0]);
+        const mainPage = mainLayout.parentElement;
+        mainLayout.remove();
+        // replace the old elements with new ones
+        for (const table of tables) {
+            const title = table.querySelector('b').innerText;
+            const linkList = table.querySelectorAll('a');
+
+            const collapsibleButton = document.createElement('div');
+            collapsibleButton.innerText = title;
+            collapsibleButton.className = 'collapsible';
+
+            const collapsibleContent = document.createElement('div');
+            collapsibleContent.className = 'collapsible-content';
+            for (const link of linkList) {
+                const linkdiv = document.createElement('div');
+                linkdiv.className = 'main-page';
+                linkdiv.appendChild(link);
+                collapsibleContent.appendChild(linkdiv);
+            }
+            // Lehre/Education is expanded by default
+            if (title === 'Lehre' || title === 'Education') {
+                collapsibleButton.classList.add('active');
+                collapsibleContent.style.display = 'block';
+            }
+            // functionality to collapse/expand
+            collapsibleButton.addEventListener('click', () => {
+                collapsibleButton.classList.toggle('active');
+                if (collapsibleContent.style.display === 'block') {
+                    collapsibleContent.style.display = 'none';
+                } else {
+                    collapsibleContent.style.display = 'block';
+                }
+            });
+            mainPage.appendChild(collapsibleButton);
+            mainPage.appendChild(collapsibleContent);
+        }
     }
 }
 
@@ -114,6 +301,7 @@ function menu() {
     addCSS(`
 .pride-logo {
     max-height: 50px;
+    width: 10%;
 }
 
 .navbar {
@@ -250,6 +438,9 @@ function menu() {
 }
 
 @media screen and (max-width: 1200px) {
+    .pride-logo {
+        width: auto;
+    }
     .navbar .nav-link, .navbar .dropdown, .navbar .nav-right#mode, .navbar .nav-right#settingsBtn, .navbar .nav-right#language {
         display: none;
     }
@@ -422,7 +613,6 @@ function menu() {
     } else {
         logo.setAttribute('title', 'Information system of Kiel University');
     }
-    logo.setAttribute('width', '10%');
     navDiv.appendChild(logo);
 
     // add all elements to the menu
@@ -569,6 +759,17 @@ function menu() {
 #settings_checkboxes input {
     margin-left: 10px;
 }
+.close-button {
+    float: right;
+    padding: 5px;
+    padding-left: 9px;
+    padding-right: 9px;
+    border-radius: 8px;
+}
+.close-button:hover {
+    background-color: #dddddd;
+    cursor: pointer;
+}
     `);
 
     const modal = document.createElement('dialog');
@@ -579,12 +780,16 @@ function menu() {
         modal.showModal();
     });
     modal.id = 'settingsMenu';
+    const closeButton = document.createElement('div');
+    closeButton.innerText = '✖';
+    closeButton.className = 'close-button';
+    closeButton.addEventListener('click', () => {
+        modal.close();
+    });
     const settingsHeader = document.createElement('h3');
     settingsHeader.innerText = 'Better UnivIS Settings';
-    const settingsText = document.createElement('p');
-    settingsText.innerText = 'press ESC to close';
+    modal.appendChild(closeButton);
     modal.appendChild(settingsHeader);
-    modal.appendChild(settingsText);
     const settingsDiv = document.createElement('div');
     settingsDiv.id = 'settings_checkboxes';
     const settingsLabel = document.createElement('label');
@@ -957,6 +1162,7 @@ function runAllImprovements() {
     menu();
     prettierList();
     prettyTable();
+    prettyMainPage();
     if (settings.groupByECTS.active) {
         groupByECTS();
     }
