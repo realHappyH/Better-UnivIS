@@ -218,7 +218,7 @@ div.main-page {
 }
     `);
     // we are on the main page iff we find the heading "Education" or "Lehre"
-    const xpath = "//b[text()='Lehre'] | b[text() = 'Education']";
+    const xpath = "//b[text()='Lehre'] | //b[text()='Education']";
     const mainPageElem = document.evaluate(
         xpath,
         document,
@@ -226,7 +226,6 @@ div.main-page {
         XPathResult.FIRST_ORDERED_NODE_TYPE,
         null,
     ).singleNodeValue;
-
     // get the elements from the main page to be able to work with them
     if (mainPageElem) {
         const mainLayout = mainPageElem
@@ -241,7 +240,6 @@ div.main-page {
         mainLayout.remove();
         // replace the old elements with new ones
         for (const table of tables) {
-            console.log(table);
             const title = table.querySelector('b').innerText;
             const linkList = table.querySelectorAll('a');
 
