@@ -129,6 +129,7 @@ function prettyTable() {
             const largeEntry = entries[i].cloneNode(true);
             const smallEntry = entries[i].cloneNode(true);
 
+            // remove all empty tags to save space
             for (const child of smallEntry.children) {
                 if (isEmpty(child)) {
                     child.remove();
@@ -137,6 +138,9 @@ function prettyTable() {
 
             const sNumberData = smallEntry.children[1];
             const sContent = smallEntry.children[2];
+            const sLecturers =
+                smallEntry.children[smallEntry.children.length - 1];
+            const lecturerText = document.createElement('small');
             if (sContent) {
                 const number = sNumberData.innerText;
                 const heading = sContent.querySelector('h4');
@@ -145,8 +149,24 @@ function prettyTable() {
                         heading.innerHTML += ` (${number.trim()})`;
                     sNumberData.remove();
                 }
+                if (sLecturers) {
+                    sLecturers.remove();
+                    const lecturerLinks = sLecturers.querySelectorAll('a');
+
+                    for (let i = 0; i < lecturerLinks.length; i++) {
+                        const link = lecturerLinks[i];
+                        lecturerText.appendChild(link);
+                        if (i < lecturerLinks.length - 1) {
+                            lecturerText.innerHTML += ', ';
+                        }
+                    }
+                    sContent.prepend(lecturerText);
+                }
             }
-            replacements[i] = { large: largeEntry, small: smallEntry };
+            replacements[i] = {
+                large: largeEntry,
+                small: smallEntry,
+            };
         }
         // change tables for small screens
         window.addEventListener('resize', () => {
