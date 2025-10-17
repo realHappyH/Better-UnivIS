@@ -174,6 +174,109 @@ function prettyTable() {
     //todo for small screens: title and description over entire width, number below checkbox, big univis logo
 }
 
+// make main page look better on mobile
+function prettyMainPage() {
+    addCSS(`
+.collapsible {
+  background-color: #eee;
+  color: #444;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+.active, .collapsible:hover {
+  background-color: #dddddd;
+}
+
+.collapsible-content {
+  padding: 18px;
+  display: none;
+  overflow: hidden;
+  background-color: #fefefe;
+}
+
+.collapsible:after {
+  content: '+';
+  font-size: 13px;
+  color: black;
+  float: right;
+  margin-left: 5px;
+}
+
+.active:after {
+  content: "-";
+}
+
+div.main-page {
+    padding: 10px;
+
+}
+    `);
+    // we are on the main page iff we find the heading "Education" or "Lehre"
+    const xpath = "//b[text()='Lehre'] | b[text() = 'Education']";
+    const mainPageElem = document.evaluate(
+        xpath,
+        document,
+        null,
+        XPathResult.FIRST_ORDERED_NODE_TYPE,
+        null,
+    ).singleNodeValue;
+
+    // get the elements from the main page to be able to work with them
+    if (mainPageElem) {
+        const mainLayout = mainPageElem
+            .closest('table')
+            .parentElement.closest('table').parentElement.parentElement;
+        const tableWrapper = mainLayout.children;
+        const tables = Array.from(tableWrapper[0].children)
+            .concat(Array.from(tableWrapper[1].children))
+            .filter((elem) => elem.innerText.trim())
+            .map((elem) => elem.querySelector('table').children[0]);
+        const mainPage = mainLayout.parentElement;
+        mainLayout.remove();
+        // replace the old elements with new ones
+        for (const table of tables) {
+            console.log(table);
+            const title = table.querySelector('b').innerText;
+            const linkList = table.querySelectorAll('a');
+
+            const collapsibleButton = document.createElement('div');
+            collapsibleButton.innerText = title;
+            collapsibleButton.className = 'collapsible';
+
+            const collapsibleContent = document.createElement('div');
+            collapsibleContent.className = 'collapsible-content';
+            for (const link of linkList) {
+                const linkdiv = document.createElement('div');
+                linkdiv.className = 'main-page';
+                linkdiv.appendChild(link);
+                collapsibleContent.appendChild(linkdiv);
+            }
+            // Lehre/Education is expanded by default
+            if (title === 'Lehre' || title === 'Education') {
+                collapsibleButton.classList.add('active');
+                collapsibleContent.style.display = 'block';
+            }
+            // functionality to collapse/expand
+            collapsibleButton.addEventListener('click', () => {
+                collapsibleButton.classList.toggle('active');
+                if (collapsibleContent.style.display === 'block') {
+                    collapsibleContent.style.display = 'none';
+                } else {
+                    collapsibleContent.style.display = 'block';
+                }
+            });
+            mainPage.appendChild(collapsibleButton);
+            mainPage.appendChild(collapsibleContent);
+        }
+    }
+}
+
 // change the menu to be in a coherent style
 function menu() {
     // style for different menu elements
@@ -1041,6 +1144,7 @@ function runAllImprovements() {
     menu();
     prettierList();
     prettyTable();
+    prettyMainPage();
     if (settings.groupByECTS.active) {
         groupByECTS();
     }
