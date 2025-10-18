@@ -12,6 +12,8 @@
 
 /* global DarkReader */
 
+const CURRENT_VERSION = '1.0.0';
+
 const mainStyle = `
 a {
     text-decoration: none;
@@ -70,6 +72,22 @@ const settings = {
 };
 
 // helper functions
+
+// get latest better-univis release
+async function getLatestRelease() {
+    return await fetch(
+        'https://api.github.com/repos/realHappyH/better-univis/releases/latest',
+    ).then((response) => response.json());
+}
+
+// zips two arrays into a single array of two-element arrays
+function zip(arr1, arr2) {
+    const result = [];
+    for (let i = 0; i < Math.min(arr1.length, arr2.length); i++) {
+        result.push([arr1[i], arr2[i]]);
+    }
+    return result;
+}
 
 // adds the given style to the document head
 function addCSS(css) {
@@ -440,8 +458,12 @@ function menu() {
     .pride-logo {
         width: auto;
     }
-    .navbar .nav-link, .navbar .dropdown, .navbar .nav-right#mode, .navbar .nav-right#settingsBtn, .navbar .nav-right#language {
+    .navbar .nav-link, .navbar .dropdown, .navbar .nav-right#mode, .navbar .nav-right#settingsBtn img, .navbar .nav-right#language {
         display: none;
+    }
+    .navbar .notification.visible {
+        display: block;
+        position: absolute;
     }
     .navbar a.icon {
         float: right;
@@ -456,12 +478,18 @@ function menu() {
         right: 0;
         top: 0;
     }
-    .navbar.responsive .nav-link, .navbar.responsive .dropdown, .navbar.responsive .nav-right#mode, .navbar.responsive .nav-right#settingsBtn, .navbar.responsive .nav-right#language, navbar.responsive .pride-logo, .navbar.responsive img {
+    .navbar.responsive .nav-link, .navbar.responsive .dropdown, .navbar.responsive .nav-right#mode, .navbar.responsive .nav-right#settingsBtn img, .nav-right#settingsBtn, .navbar.responsive .nav-right#language, navbar.responsive .pride-logo, .navbar.responsive img {
         float: none;
         display: block;
         text-align: center;
         width: auto;
         margin: auto;
+    }
+    .navbar.responsive .notification {
+        position: relative;
+        width: 10px;
+        top: -50px;
+        right: -51%;
     }
 }
     `);
@@ -750,13 +778,29 @@ function menu() {
 #settings_checkboxes label {
     float: left;
 }
-#settingsList {
-    margin: 0;
+.settingsList {
+    margin: 5;
     list-style: none;
     float: left;
 }
 #settings_checkboxes input {
     margin-left: 10px;
+}
+.settings label {
+    float: left;
+}
+.settings ul {
+    margin: 0;
+    list-style: none;
+    float: left;
+}
+#update-button {
+    background-color: #ddd;
+    border-radius: 8px;
+    color: green;
+}
+#update-button:hover {
+    background-color: #bbb;
 }
 .close-button {
     float: right;
@@ -769,8 +813,19 @@ function menu() {
     background-color: #dddddd;
     cursor: pointer;
 }
+.notification {
+    background-color: #fa3e3e;
+    border-radius: 4px;
+    padding: 5px;
+    position: absolute;
+    top:2px;
+    right:8px;
+    display: none;
+}
+.notification.visible {
+    display: block;
+}
     `);
-
     const modal = document.createElement('dialog');
     navDiv.append(modal);
 
@@ -789,13 +844,68 @@ function menu() {
     settingsHeader.innerText = 'Better UnivIS Settings';
     modal.appendChild(closeButton);
     modal.appendChild(settingsHeader);
+
+    // Version info
+
+    // show notification iff new Update is available
+    const notification = document.createElement('span');
+    notification.className = 'notification';
+    notification.innerText = '1';
+
+    getLatestRelease().then((response) => {
+        const latestVersion = response.tag_name;
+        console.log(`latest version: ${latestVersion}`);
+
+        const newVersionAvailable = zip(
+            latestVersion.split('.').map((elem) => {
+                return Number(elem.replace('v', ''));
+            }),
+            CURRENT_VERSION.split('.').map((elem) => {
+                return Number(elem);
+            }),
+        ).reduce((acc, cur) => acc || cur[0] > cur[1], false);
+
+        settingsBtn.appendChild(notification);
+
+        console.log(`new version available: ${newVersionAvailable}`);
+
+        // add version info to settings menu
+        const vDiv = document.createElement('div');
+        vDiv.className = 'settings';
+        const versionLabel = document.createElement('label');
+        versionLabel.innerText = 'Better UnivIS Version';
+        vDiv.appendChild(versionLabel);
+        const versionList = document.createElement('ul');
+        const current = document.createElement('li');
+        current.innerText = `installed: v${CURRENT_VERSION}`;
+        const recent = document.createElement('li');
+        recent.innerText = `latest: ${latestVersion}`;
+        versionList.append(current, recent);
+        versionList.className = 'settingsList';
+
+        // show update button if new version available
+        if (newVersionAvailable) {
+            notification.classList.add('visible');
+            const updateEntry = document.createElement('li');
+            const updateButton = document.createElement('a');
+            updateButton.innerText = 'Update';
+            updateButton.id = 'update-button';
+            updateButton.href = response.assets[0].browser_download_url;
+            updateEntry.appendChild(updateButton);
+            versionList.append(updateEntry);
+        }
+
+        vDiv.append(versionList);
+        modal.appendChild(vDiv);
+    });
+
     const settingsDiv = document.createElement('div');
     settingsDiv.id = 'settings_checkboxes';
     const settingsLabel = document.createElement('label');
     settingsLabel.innerText = 'Experimental Settings';
     settingsDiv.appendChild(settingsLabel);
     const settingsList = document.createElement('ul');
-    settingsList.id = 'settingsList';
+    settingsList.className = 'settingsList';
 
     // add the settings to the settings modal
     for (const setting of Object.values(settings)) {
@@ -1072,7 +1182,7 @@ function toggleMode() {
 // improves the list of links to look a little less overwhelming
 function prettierList() {
     const Style = `
-ul:not(#settingsList) {
+ul:not(.settingsList) {
     list-style-type: none;
     -moz-column-count: 4;
     -moz-column-gap: 20px;
@@ -1082,40 +1192,40 @@ ul:not(#settingsList) {
     column-gap: 20px;
 }
 @media screen and (max-width: 1200px) {
-    ul:not(#settingsList) {
+    ul:not(.settingsList) {
         column-count: 3;
         -webkit-column-count: 3;
         -moz-column-count: 3;
     }
 }
 @media screen and (max-width: 900px) {
-    ul:not(#settingsList) {
+    ul:not(.settingsList) {
         column-count: 2;
         -webkit-column-count: 2;
         -moz-column-count: 2;
     }
 }
 @media screen and (max-width: 500px) {
-    ul:not(#settingsList) {
+    ul:not(.settingsList) {
         column-count: 1;
         -webkit-column-count: 1;
         -moz-column-count: 1;
     }
 }
-ul:not(#settingsList) li {
+ul:not(.settingsList) li {
     width: 100%;
 }
-ul:not(#settingsList) a {
+ul:not(.settingsList) a {
     display: inline-block;
     text-decoration: none;
     padding:10px;
     width: 100%;
 }
-ul:not(#settingsList) a:hover {
+ul:not(.settingsList) a:hover {
     background-color: #ddd;
     text-decoration: none;
 }
-ul:not(#settingsList) a .alternate {
+ul:not(.settingsList) a .alternate {
     background-color: #eeeeee;
 }
     `;
