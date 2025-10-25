@@ -462,7 +462,7 @@ function menu() {
     .pride-logo {
         width: auto;
     }
-    .navbar .nav-link, .navbar .dropdown, .navbar .nav-right#mode, .navbar .nav-right#settingsBtn img, .navbar .nav-right#language {
+    .navbar .nav-link, .navbar .dropdown, .navbar .nav-right#mode, .navbar .nav-right#settingsBtn, .navbar .nav-right#language {
         display: none;
     }
     .navbar .notification.visible {
@@ -482,7 +482,7 @@ function menu() {
         right: 0;
         top: 0;
     }
-    .navbar.responsive .nav-link, .navbar.responsive .dropdown, .navbar.responsive .nav-right#mode, .navbar.responsive .nav-right#settingsBtn img, .nav-right#settingsBtn, .navbar.responsive .nav-right#language, navbar.responsive .pride-logo, .navbar.responsive img {
+    .navbar.responsive .nav-link, .navbar.responsive .dropdown, .navbar.responsive .nav-right#mode, .navbar.responsive .nav-right#settingsBtn, .navbar.responsive .nav-right#language, navbar.responsive .pride-logo, .navbar.responsive img {
         float: none;
         display: block;
         text-align: center;
@@ -869,7 +869,7 @@ function menu() {
             }),
         ).reduce((acc, cur) => acc || cur[0] > cur[1], false);
 
-        settingsBtn.appendChild(notification);
+        settingsBtn.after(notification);
 
         console.log(`new version available: ${newVersionAvailable}`);
 
