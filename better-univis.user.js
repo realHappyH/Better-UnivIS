@@ -3,7 +3,7 @@
 // @namespace   Violentmonkey Scripts
 // @match       *://univis.uni-kiel.de/*
 // @grant       none
-// @version     1.1.0
+// @version     1.1.1
 // @author      HappyH
 // @description Verbessert UnivIS
 // @require     https://unpkg.com/darkreader@4.9.105/darkreader.js#sha512=2b7f8f0cb074b0f1ca650f8feb81e345232a9f973257481dc0f56e8fcabb44f052e591f9039b684490c4e650bb71024f365fa085539a4213ad21bd7f15d28e93
@@ -12,7 +12,7 @@
 
 /* global DarkReader */
 
-const CURRENT_VERSION = '1.1.0';
+const CURRENT_VERSION = '1.1.1';
 
 const mainStyle = `
 a {
