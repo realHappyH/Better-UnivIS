@@ -1299,5 +1299,5 @@ function semester(event) {
 (function () {
     'use strict';
     console.log('This is betterUnivIS, starting up');
-    window.addEventListener('load', runAllImprovements, false);
+    runAllImprovements();
 })();
